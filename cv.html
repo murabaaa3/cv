@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سيرة ذاتية: بلال فواز القاسم - مصمم موشن جرافيك</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', 'Inter', sans-serif;
+            background-color: #1a202c; 
+            color: #e2e8f0; 
+            overflow-x: hidden; 
+        }
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .text-light-orange {
+            color: #fed7aa; 
+        }
+        .text-light-orange-link:hover {
+            color: #fbd38d; 
+        }
+        .bg-gradient-animated {
+            background-size: 200% 200%;
+            animation: gradientAnimation 10s ease infinite;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .icon-link:hover svg {
+            transform: scale(1.2);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card {
+            background-color: rgba(45, 55, 72, 0.7); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 85, 104, 0.5);
+            transition: transform 0.3s ease; 
+        }
+        .overview-card { 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .overview-card:hover {
+            transform: scale(1.05);
+            box-shadow: inset 0 0 15px 3px rgba(79, 209, 197, 0.4); 
+        }
+        .skill-bar-bg {
+            background-color: #4a5568; 
+        }
+        .skill-bar-fill {
+            background: linear-gradient(to right, #4299e1, #3182ce); 
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, #4fd1c5, #38b2ac); 
+            margin-top: 8px;
+            border-radius: 2px;
+        }
+        
+        /* Original Hero Shapes for background lighting effect */
+        .hero-shape {
+            position: absolute; /* Changed from fixed to absolute to be contained by body if needed, but will appear fixed due to z-index and body size */
+            top: -80px; /* Adjusted for visual effect */
+            left: -100px; /* Adjusted for visual effect */
+            width: 400px; /* Adjusted size */
+            height: 400px;
+            background: radial-gradient(circle, rgba(76, 81, 195, 0.2) 0%, rgba(76, 81, 195, 0) 70%); /* Subtle blue/purple */
+            border-radius: 50%;
+            z-index: 0; /* Behind main content */
+            animation: pulseShape 7s infinite alternate ease-in-out;
+        }
+        .hero-shape-2 {
+            position: absolute; /* Changed from fixed to absolute */
+            bottom: -100px; /* Adjusted for visual effect */
+            right: -120px; /* Adjusted for visual effect */
+            width: 450px; /* Adjusted size */
+            height: 450px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0) 70%); /* Subtle sky blue */
+            border-radius: 50%;
+            z-index: 0; /* Behind main content */
+            animation: pulseShape 8s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes pulseShape { /* Subtle pulsing animation for hero shapes */
+            0% {
+                transform: scale(0.95);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .text-light-gray {
+            color: #d1d5db; 
+        }
+        .text-turquoise { 
+            color: #4fd1c5; 
+        }
+        .text-amber-300 { 
+            color: #fcd34d; 
+        }
+        .text-teal-300 { 
+            color: #5eead4;
+        }
+        .experience-detail-badge {
+            background-color: #334155; 
+            color: #5eead4; 
+            padding: 0.25rem 0.75rem; 
+            border-radius: 0.375rem; 
+            font-size: 0.75rem; 
+            font-weight: 500; 
+            line-height: 1; 
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start; 
+            margin-bottom: 0.5rem; 
+        }
+        .checklist-icon {
+            color: #fbbf24; 
+            width: 1.25rem; 
+            height: 1.25rem; 
+            margin-left: 0.5rem; 
+            flex-shrink: 0; 
+            margin-top: 0.125rem; 
+        }
+        .youtube-btn {
+            background-color: #0d9488; 
+            color: white;
+            padding: 0.5rem 1rem; 
+            border-radius: 0.375rem; 
+            font-weight: 600; 
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        .youtube-btn:hover {
+            background-color: #0f766e; 
+        }
+        .youtube-btn svg {
+            width: 1.25rem; 
+            height: 1.25rem; 
+            margin-left: 0.5rem; 
+        }
+        .main-container-wrapper { 
+            position: relative;
+            z-index: 1; /* Ensure content is above the hero shapes */
+        }
+        .portfolio-item-title {
+            font-size: 0.875rem; /* text-sm */
+            color: #9ca3af; /* text-gray-400 */
+            text-align: center;
+            margin-top: 0.5rem; /* mb-2 */
+        }
+        .video-embed-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: #000; /* Black background for letter/pillar boxing */
+        }
+        .video-embed-container.aspect-16-9 {
+             padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .video-embed-container.aspect-9-16 {
+             padding-top: 177.77%; /* 9:16 Aspect Ratio for vertical videos */
+        }
+        .video-embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0; 
+        }
+
+    </style>
+</head>
+<body class="antialiased leading-relaxed">
+
+    <div class="hero-shape"></div>
+    <div class="hero-shape-2"></div>
+
+    <div class="main-container-wrapper"> 
+        <div class="container mx-auto p-4 md:p-8 max-w-5xl relative">
+            <header class="text-center mb-12 pt-8">
+                <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-2">
+                    بلال فواز القاسم
+                </h1>
+                <p class="text-xl md:text-2xl font-light text-light-gray">
+                    مصمم موشن جرافيك | شغوف بالإبداع البصري
+                </p>
+                <div class="mt-6 flex justify-center space-x-6 space-x-reverse">
+                    <a href="mailto:murabaaa3@gmail.com" class="icon-link text-gray-300 hover:text-sky-400 transition-colors duration-300" title="البريد الإلكتروني">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+                            <path d="M3 7l9 6l9 -6" />
+                        </svg>
+                    </a>
+                    <a href="https://wa.me/905374294082" target="_blank" class="icon-link text-gray-300 hover:text-green-400 transition-colors duration-300" title="واتساب">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="currentColor" viewBox="0 0 448 512">
+                            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.5-7c-18.9-29.6-28.9-63.4-28.9-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.behance.net/murabaaa3" target="_blank" class="icon-link text-gray-300 hover:text-indigo-400 transition-colors duration-300" title="بيهانس">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="currentColor">
+                            <title>Behance</title>
+                            <path d="M16.969 16.927a2.561 2.561 0 0 0 1.901.677 2.501 2.501 0 0 0 1.531-.475c.362-.235.636-.584.779-.99h2.585a5.091 5.091 0 0 1-1.9 2.896 5.292 5.292 0 0 1-3.091.88 5.839 5.839 0 0 1-2.284-.433 4.871 4.871 0 0 1-1.723-1.211 5.657 5.657 0 0 1-1.08-1.874 7.057 7.057 0 0 1-.383-2.393c-.005-.8.129-1.595.396-2.349a5.313 5.313 0 0 1 5.088-3.604 4.87 4.87 0 0 1 2.376.563c.661.362 1.231.87 1.668 1.485a6.2 6.2 0 0 1 .943 2.133c.194.821.263 1.666.205 2.508h-7.699c-.063.79.184 1.574.688 2.187ZM6.947 4.084a8.065 8.065 0 0 1 1.928.198 4.29 4.29 0 0 1 1.49.638c.418.303.748.711.958 1.182.241.579.357 1.203.341 1.83a3.506 3.506 0 0 1-.506 1.961 3.726 3.726 0 0 1-1.503 1.287 3.588 3.588 0 0 1 2.027 1.437c.464.747.697 1.615.67 2.494a4.593 4.593 0 0 1-.423 2.032 3.945 3.945 0 0 1-1.163 1.413 5.114 5.114 0 0 1-1.683.807 7.135 7.135 0 0 1-1.928.259H0V4.084h6.947Zm-.235 12.9c.308.004.616-.029.916-.099a2.18 2.18 0 0 0 .766-.332c.228-.158.411-.371.534-.619.142-.317.208-.663.191-1.009a2.08 2.08 0 0 0-.642-1.715 2.618 2.618 0 0 0-1.696-.505h-3.54v4.279h3.471Zm13.635-5.967a2.13 2.13 0 0 0-1.654-.619 2.336 2.336 0 0 0-1.163.259 2.474 2.474 0 0 0-.738.62 2.359 2.359 0 0 0-.396.792c-.074.239-.12.485-.137.734h4.769a3.239 3.239 0 0 0-.679-1.785l-.002-.001Zm-13.813-.648a2.254 2.254 0 0 0 1.423-.433c.399-.355.607-.88.56-1.413a1.916 1.916 0 0 0-.178-.891 1.298 1.298 0 0 0-.495-.533 1.851 1.851 0 0 0-.711-.274 3.966 3.966 0 0 0-.835-.073H3.241v3.631h3.293v-.014ZM21.62 5.122h-5.976v1.527h5.976V5.122Z"/>
+                        </svg>
+                    </a>
+                    <div class="icon-link text-gray-300 flex items-center" title="الموقع">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8 mr-2">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                            <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" />
+                        </svg>
+                        <span>سوريا</span>
+                    </div>
+                </div>
+            </header>
+    
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold mb-8 text-turquoise section-title">نظرة سريعة</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="card overview-card rounded-xl p-6 shadow-xl">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="p-3 rounded-full bg-gradient-to-br from-blue-500 to-blue-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                        </div>
+                        <h3 class="text-4xl font-extrabold text-center gradient-text bg-gradient-to-r from-blue-300 to-blue-500">15+</h3>
+                        <p class="text-center text-lg text-gray-300 mt-2">عام خبرة في مجال التصميم</p>
+                    </div>
+                    <div class="card overview-card rounded-xl p-6 shadow-xl">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="p-3 rounded-full bg-gradient-to-br from-purple-500 to-purple-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            </div>
+                        </div>
+                        <h3 class="text-4xl font-extrabold text-center gradient-text bg-gradient-to-r from-purple-300 to-purple-500">3</h3>
+                        <p class="text-center text-lg text-gray-300 mt-2">سنوات تخصص في الموشن جرافيك</p>
+                    </div>
+                    <div class="card overview-card rounded-xl p-6 shadow-xl">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="p-3 rounded-full bg-gradient-to-br from-teal-500 to-teal-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                            </div>
+                        </div>
+                        <h3 class="text-4xl font-extrabold text-center gradient-text bg-gradient-to-r from-teal-300 to-teal-500">50+</h3>
+                        <p class="text-center text-lg text-gray-300 mt-2">مشروع موشن جرافيك إبداعي</p>
+                    </div>
+                    <div class="card overview-card rounded-xl p-6 shadow-xl">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="p-3 rounded-full bg-gradient-to-br from-pink-500 to-pink-700">
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-center gradient-text bg-gradient-to-r from-pink-300 to-pink-500">عملاء مميزون</h3>
+                        <p class="text-center text-sm text-gray-300 mt-2">البنك الأهلي<br>وزارة الأوقاف السورية</p>
+                    </div>
+                </div>
+            </section>
+    
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-2 space-y-12">
+                    <section>
+                        <h2 class="text-3xl font-bold mb-8 text-turquoise section-title">المؤهلات التعليمية</h2>
+                         <div class="card rounded-lg p-6 shadow-lg">
+                            <h3 class="text-xl font-bold text-amber-300">جامعة العلوم والتكنولوجيا</h3>
+                            <p class="text-gray-300">بكالوريوس في نظم المعلومات الإدارية</p>
+                            <p class="text-sm text-gray-400">سنة التخرج: 2013</p>
+                        </div>
+                    </section>
+    
+                    <section>
+                        <h2 class="text-3xl font-bold mb-8 text-turquoise section-title">الخبرات العملية</h2>
+                        <div class="space-y-8">
+                            <div class="card rounded-lg p-6 shadow-lg">
+                                <h3 class="text-xl font-bold text-amber-300 flex justify-between items-center">
+                                    <span>مصمم موشن جرافيك</span>
+                                    <span class="experience-detail-badge">(Freelancer)</span>
+                                </h3>
+                                <p class="text-sm text-gray-400 mb-2">2023 - حتى الآن</p>
+                                <p class="text-gray-300 mb-3">تنفيذ مشاريع موشن جرافيك كاملة لجهات حكومية وخاصة.</p>
+                                <h4 class="font-semibold text-gray-200 mb-1">أبرز الأعمال:</h4>
+                                <ul class="space-y-1 text-gray-300">
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>فيديو موشن لمنصة واو بلس (ترشح لجائزة gridliners) - <a href="https://gridliners.com/awards/portfolio/wa-web-plus/" target="_blank" class="text-light-orange text-light-orange-link underline">مشاهدة المشروع</a></span>
+                                    </li>
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>سلسلة فيديوهات للبنك الأهلي السعودي في جدة</span>
+                                    </li>
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>فيديو موشن لصالح وزارة الأوقاف السورية في رمضان</span>
+                                    </li>
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>فيديو أعمال لصالح منصة شفاء السعودية</span>
+                                    </li>
+                                </ul>
+                                <div class="text-center mt-6">
+                                    <a href="https://www.youtube.com/watch?v=_h-5T25oPKY" target="_blank" class="youtube-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.484 3.409 0 5.696 0 12s.484 8.59 4.385 8.816c3.6.245 11.626.246 15.23 0C23.516 20.59 24 18.304 24 12s-.484-8.59-4.385-8.816zM9.75 15.6V8.4l6.3 3.6-6.3 3.6z"/>
+                                        </svg>
+                                        <span>لقطات من اعمالي - showreel 2024</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card rounded-lg p-6 shadow-lg">
+                                <h3 class="text-xl font-bold text-amber-300 flex justify-between items-center">
+                                    <span>قناة تعليمية للموشن جرافيك</span>
+                                    <span class="experience-detail-badge">مشروع شخصي</span>
+                                </h3>
+                                <p class="text-sm text-gray-400 mb-2">2024 - حتى الآن</p>
+                                <div class="flex justify-between items-start">
+                                    <div class="checklist-item text-gray-300 mb-3 flex-grow">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="checklist-icon text-amber-300 mt-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 2a6 6 0 00-6 6c0 1.888.77 3.622 2.053 4.833.05.046.102.09.156.132L5.5 17.707A1 1 0 006.914 19.12l1.036-1.036A6.953 6.953 0 0010 18.5a7.002 7.002 0 005.947-3.667 1 1 0 00-1.732-.992A5.002 5.002 0 0110 16.5a5 5 0 01-5-5c0-2.485 1.79-4.556 4.145-4.941A5.01 5.01 0 0110 2zm1-1a1 1 0 10-2 0v2a1 1 0 102 0V1zM5.05 5.05a1 1 0 00-1.414 1.414L5.05 7.879a1 1 0 001.414-1.414L5.05 5.05zm9.9 0a1 1 0 00-1.414-1.414L12.12 5.05a1 1 0 001.414 1.414l1.414-1.414zM10 12a1 1 0 100-2 1 1 0 000 2z"/>
+                                        </svg>
+                                        <span>مشاركة نصائح واحترافية في مجال التصميم.</span>
+                                    </div>
+                                    <a href="https://www.youtube.com/@murabaaa3" target="_blank" class="youtube-btn text-sm py-1 px-3 ml-4 flex-shrink-0">
+                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ml-1">
+                                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.484 3.409 0 5.696 0 12s.484 8.59 4.385 8.816c3.6.245 11.626.246 15.23 0C23.516 20.59 24 18.304 24 12s-.484-8.59-4.385-8.816zM9.75 15.6V8.4l6.3 3.6-6.3 3.6z"/>
+                                        </svg>
+                                        <span>قناة اليوتيوب</span>
+                                    </a>
+                                </div>
+                                <div class="flex items-center text-gray-300 mt-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-300 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                                    </svg>
+                                    <span class="text-sm">أكثر من</span>
+                                    <span class="text-xl font-bold text-teal-300 mx-1">1500</span>
+                                    <span class="text-sm">متابع</span>
+                                </div>
+                            </div>
+                            <div class="card rounded-lg p-6 shadow-lg">
+                                <h3 class="text-xl font-bold text-amber-300 flex justify-between items-center">
+                                    <span>مصمم جرافيك في شركة BCM</span>
+                                    <span class="experience-detail-badge">(الإمارات)</span>
+                                </h3>
+                                <p class="text-sm text-gray-400 mb-2">2024 - 2025 (دوام كامل)</p>
+                                <ul class="space-y-1 text-gray-300">
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>عملت بالشعارات وتصاميم السوشيال ميديا.</span>
+                                    </li>
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>صممت خلالها أكثر من حوالي 300 تصميم سوشيال ميديا إبداعي.</span>
+                                    </li>
+                                    <li class="checklist-item">
+                                        <svg class="checklist-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span>تصميم مجموعة متنوعة من الشعارات للعملاء.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold mb-8 text-turquoise section-title">أعمال مختارة</h2>
+                    
+                        <div class="card rounded-lg p-3 shadow-lg mb-6">
+                            <div class="video-embed-container aspect-16-9">
+                                <iframe src="https://www.youtube.com/embed/Dyxv0y4y1WM?si=WIsxAejrO8EsKW95" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                             </div>
+                    
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                            <div class="card rounded-lg p-3 shadow-lg">
+                                <div class="video-embed-container aspect-9-16">
+                                     <iframe src="https://www.youtube.com/embed/vL4BtTqRrRo?si=vq2axIRi3ubWjhaA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                </div>
+                                </div>
+                            <div class="card rounded-lg p-3 shadow-lg">
+                                 <div class="video-embed-container aspect-9-16">
+                                     <iframe src="https://www.youtube.com/embed/oC8EkcnoTU8?si=D1AX5ab1DzrfTTHD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                </div>
+                                 </div>
+                        </div>
+                    
+                        <div class="card rounded-lg p-3 shadow-lg mb-8">
+                            <div class="video-embed-container aspect-16-9">
+                                 <iframe src="https://www.youtube.com/embed/mGhoA2eibk0?si=mYCm7uX9tXn4S_21" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                             </div>
+                    
+                        <div class="text-center mt-8">
+                            <a href="https://www.behance.net/murabaaa3" target="_blank" class="youtube-btn">
+                                <span>شاهد المزيد من الأعمال</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                                </svg>
+                            </a>
+                        </div>
+                    </section>
+                    
+                </div>
+    
+                <div class="md:col-span-1 space-y-12">
+                    <section>
+                        <h2 class="text-3xl font-bold mb-8 text-turquoise section-title">المهارات</h2>
+                        <div class="space-y-5 card rounded-lg p-6 shadow-lg">
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-light-gray">Adobe After Effects</span>
+                                    <span class="text-sm font-medium text-light-gray">متقدم</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-light-gray">Adobe Premiere Pro</span>
+                                    <span class="text-sm font-medium text-light-gray">متقدم</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-light-gray">Adobe Photoshop</span>
+                                    <span class="text-sm font-medium text-light-gray">متقدم</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-light-gray">Adobe Illustrator</span>
+                                    <span class="text-sm font-medium text-light-gray">متقدم</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-light-gray">Blender</span>
+                                    <span class="text-sm font-medium text-light-gray">جيد</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-light-gray">Adobe Substance 3D</span>
+                                    <span class="text-sm font-medium text-light-gray">جيد</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <section>
+                        <h2 class="text-3xl font-bold mb-8 text-turquoise section-title">اللغات</h2>
+                        <div class="card rounded-lg p-6 shadow-lg space-y-5">
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-amber-300">العربية</span>
+                                    <span class="text-sm font-medium text-amber-300">اللغة الأم</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-base font-medium text-amber-300">الإنجليزية</span>
+                                    <span class="text-sm font-medium text-amber-300">متوسط</span>
+                                </div>
+                                <div class="w-full skill-bar-bg rounded-full h-2.5">
+                                    <div class="skill-bar-fill h-2.5 rounded-full bg-gradient-to-r from-sky-400 to-cyan-500" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+    
+            <footer class="text-center py-10 mt-12 border-t border-gray-700">
+                <p class="text-gray-400">© <script>document.write(new Date().getFullYear())</script> بلال فواز القاسم. جميع الحقوق محفوظة.</p>
+                <p class="text-sm text-gray-500 mt-1">تم تصميم هذه السيرة الذاتية بحب وإبداع.</p>
+            </footer>
+    
+        </div> 
+    </div>
+    </body>
+</html>
