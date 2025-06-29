@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مهامي اليومية</title>
+    <!-- تضمين Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تضمين خط Cairo من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f2f5; /* لون الخلفية للوضع النهاري */
+            font-size: 1.05rem; /* تكبير الخط قليلاً */
+            overflow-x: hidden;
+            transition: background-color 0.3s ease; /* انتقال سلس لتغيير الخلفية */
+        }
+        body.dark {
+            background-color: #0C0C1E !important; /* لون خلفية داكن جداً للوضع الليلي */
+        }
+        /* لضمان أقصى عرض للزر على الشاشات الصغيرة */
+        .w-full-sm {
+            width: 100%;
+        }
+        @media (min-width: 640px) {
+            .w-full-sm {
+                width: auto;
+            }
+        }
+        /* تصميم المهمة المكتملة */
+        .task-completed {
+            background-color: #34D399 !important;
+            color: #FFFFFF !important;
+        }
+        .task-completed .task-text {
+            text-decoration: line-through;
+            opacity: 1;
+            color: #FFFFFF !important;
+        }
+        /* تعديلات على الأيقونات لتكون أصغر */
+        .action-icon {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* أنماط الـ Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            direction: rtl;
+            transition: background-color 0.3s ease;
+        }
+        body.dark .modal-content {
+            background-color: #2d3748; /* bg-gray-800 for dark mode */
+            color: #e2e8f0; /* text-gray-200 for dark mode */
+        }
+        body.dark .modal-content h3 {
+            color: #cbd5e0; /* text-gray-300 for dark mode */
+        }
+        body.dark .modal-content p {
+            color: #a0aec0; /* text-gray-400 for dark mode */
+        }
+
+        /* أنماط الـ Confirmation Modal */
+        .confirmation-modal .modal-content {
+            max-width: 400px;
+        }
+
+        /* لضبط المحاذاة اليمنى للعنصر القابل للتحرير وضمان التفاف النص */
+        .task-text {
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
+            flex-shrink: 1;
+        }
+
+        .task-text[contenteditable="true"] {
+            outline: 2px solid #3B82F6;
+            border-radius: 0.25rem;
+            padding: 0.25rem;
+            text-align: right;
+            direction: rtl;
+        }
+
+        /* التأكد من أن div الحاضنة تسمح بالنمو */
+        .task-content-wrapper {
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            min-width: 0;
+            text-align: right;
+        }
+
+        /* أنماط محرر النصوص الغني */
+        .rich-text-editor {
+            border: 1px solid #ccc;
+            min-height: 150px;
+            padding: 10px;
+            border-radius: 5px;
+            outline: none;
+            overflow-y: auto;
+            text-align: right;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+        body.dark .rich-text-editor {
+            background-color: #4a5568; /* bg-gray-700 dark */
+            border-color: #4a5568;
+            color: #e2e8f0; /* text-gray-200 dark */
+        }
+        .rich-text-toolbar button {
+            padding: 8px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 5px;
+            margin-bottom: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        body.dark .rich-text-toolbar button {
+            background-color: #4a5568; /* dark:bg-gray-700 */
+            border-color: #4a5568; /* dark:border-gray-700 */
+            color: #e2e8f0; /* dark:text-gray-200 */
+        }
+        .rich-text-toolbar button:hover {
+            background-color: #e0e0e0;
+        }
+        body.dark .rich-text-toolbar button:hover {
+            background-color: #2d3748; /* dark:bg-gray-800 */
+        }
+        .rich-text-toolbar select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 5px;
+            margin-bottom: 5px;
+            background-color: white;
+            cursor: pointer;
+            text-align: right;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+        body.dark .rich-text-toolbar select {
+            background-color: #4a5568; /* dark:bg-gray-700 */
+            border-color: #4a5568; /* dark:border-gray-700 */
+            color: #e2e8f0; /* dark:text-gray-200 */
+        }
+        .rich-text-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 8px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            direction: ltr;
+            justify-content: flex-start;
+            transition: all 0.3s ease;
+        }
+        body.dark .rich-text-toolbar {
+            background-color: #2d3748; /* dark:bg-gray-800 */
+            border-color: #4a5568; /* dark:border-gray-700 */
+        }
+        .rich-text-toolbar svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* أنماط قسم إدارة التصنيفات المنبثق (الجديد) */
+        .category-management-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .category-management-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            direction: rtl;
+            transition: background-color 0.3s ease;
+        }
+        body.dark .category-management-content {
+            background-color: #2d3748; /* dark:bg-gray-800 */
+            color: #e2e8f0; /* text-gray-200 for dark mode */
+        }
+        body.dark .category-management-content h2 {
+             color: #cbd5e0; /* text-gray-300 for dark mode */
+        }
+        /* نمط الشعار لجعله قابلاً للنقر */
+        .logo-container {
+            cursor: pointer;
+            display: inline-block;
+        }
+        /* أنماط العناصر في الوضع الداكن */
+        .dark .bg-white {
+            background-color: #2d3748; /* dark:bg-gray-800 */
+            color: #e2e8f0; /* dark:text-gray-200 */
+        }
+        .dark .text-gray-800 {
+            color: #cbd5e0; /* dark:text-gray-300 */
+        }
+        .dark .text-gray-700 {
+            color: #a0aec0; /* dark:text-gray-400 */
+        }
+        .dark .bg-gray-100 {
+            background-color: #4a5568; /* dark:bg-gray-700 */
+        }
+        .dark .border-gray-300 {
+            border-color: #4a5568; /* dark:border-gray-700 */
+        }
+        .dark .text-gray-500 {
+            color: #a0aec0; /* dark:text-gray-400 */
+        }
+        .dark input, .dark select, .dark textarea {
+            background-color: #4a5568; /* dark:bg-gray-700 */
+            border-color: #4a5568; /* dark:border-gray-700 */
+            color: #e2e8f0; /* dark:text-gray-200 */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div id="appContainer" class="bg-white p-6 md:p-8 rounded-xl shadow-lg w-full max-w-4xl mx-auto transition-all duration-300">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">مهامي اليومية</h1>
+
+        <!-- إضافة الشعار هنا -->
+        <div class="flex justify-center mb-6">
+            <label for="logoUpload" class="logo-container">
+                <img id="appLogo" src="شعار-مربع-جاهز.png" alt="شعار الموقع" class="h-24 w-24 rounded-full shadow-md object-cover" onerror="this.onerror=null;this.src='https://placehold.co/96x96/cccccc/333333?text=%E2%9A%99';">
+                <input type="file" id="logoUpload" accept="image/*" class="hidden">
+            </label>
+        </div>
+
+        <!-- أزرار التحكم بالوضع الليلي والعرض وإدارة التصنيفات وإعادة التعيين -->
+        <div class="mb-6 flex flex-wrap justify-center gap-4">
+            <button id="toggleDarkModeButton"
+                    class="bg-gray-700 text-white p-3 rounded-lg hover:bg-gray-800 transition duration-300 ease-in-out transform hover:scale-105 shadow-md px-6">
+                الوضع الليلي
+            </button>
+            <button id="toggleWidthButton"
+                    class="bg-blue-700 text-white p-3 rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out transform hover:scale-105 shadow-md px-6">
+                عرض كامل
+            </button>
+            <button id="toggleCategoryManagementButton"
+                    class="bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-md w-full-sm px-6">
+                إدارة التصنيفات
+            </button>
+            <button id="resetAllDataButton"
+                    class="bg-red-700 text-white p-3 rounded-lg hover:bg-red-800 transition duration-300 ease-in-out transform hover:scale-105 shadow-md px-6">
+                تصفير البيانات
+            </button>
+        </div>
+
+        <!-- قسم إضافة مهمة جديدة -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">أضف مهمة جديدة</h2>
+            <div class="flex flex-col sm:flex-row gap-2 mb-3 items-end">
+                <select id="taskCategorySelect" class="flex-grow p-3 border border-gray-300 rounded-lg text-gray-700 text-right">
+                    <option value="">بدون تصنيف</option>
+                    <!-- ستتم إضافة خيارات التصنيفات هنا بواسطة JavaScript -->
+                </select>
+                <input type="text" id="quickAddCategoryInput" placeholder="أضف تصنيفًا سريعًا..."
+                       class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-right flex-grow">
+                <button id="quickAddCategoryButton"
+                        class="bg-purple-500 text-white p-3 rounded-lg hover:bg-purple-600 transition duration-300 ease-in-out transform hover:scale-105 shadow-md flex-shrink-0 w-full sm:w-auto">
+                    أضف سريعًا
+                </button>
+            </div>
+            <input type="text" id="taskInput" placeholder="أضف مهمة جديدة..."
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+            <button id="addTaskButton"
+                    class="mt-4 w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                أضف مهمة
+            </button>
+        </div>
+
+        <!-- قائمة المهام المصنفة -->
+        <div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">قائمة المهام</h2>
+            <div id="taskCategoriesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- أقسام التصنيفات والمهام ستضاف هنا بواسطة JavaScript -->
+            </div>
+            <p id="noTasksMessage" class="text-gray-500 text-center mt-4 hidden">لا توجد مهام حالياً. أضف مهمة للبدء!</p>
+        </div>
+    </div>
+
+    <!-- Modal للملاحظات التفصيلية -->
+    <div id="notesModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 text-right">ملاحظات المهمة</h3>
+            <!-- شريط أدوات محرر النصوص الغني -->
+            <div class="rich-text-toolbar">
+                <button onmousedown="event.preventDefault();" onclick="formatText('bold')"><b>B</b></button>
+                <button onmousedown="event.preventDefault();" onclick="formatText('italic')"><i>I</i></button>
+                <button onmousedown="event.preventDefault();" onclick="formatText('underline')"><u>U</u></button>
+                <select onmousedown="event.preventDefault();" onchange="formatText('fontSize', this.value); this.value='';" class="text-sm">
+                    <option value="">حجم الخط</option>
+                    <option value="1">صغير جداً</option>
+                    <option value="2">صغير</option>
+                    <option value="3">متوسط</option>
+                    <option value="4">كبير</option>
+                    <option value="5">أكبر</option>
+                    <option value="6">ضخم</option>
+                    <option value="7">ضخم جداً</option>
+                </select>
+                <button onmousedown="event.preventDefault();" onclick="formatText('justifyright')">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 15h12v2H9v-2zm-6 4h18v-2H3v2zm0-8h18v-2H3v2zm6-4h12v2H9V7zM3 3v2h18V3H3z"></path>
+                    </svg>
+                </button>
+                <button onmousedown="event.preventDefault();" onclick="formatText('justifycenter')">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 15h10v2H7v-2zm-4 4h18v-2H3v2zm0-8h18v-2H3v2zm4-4h10v2H7V7zM3 3v2h18V3H3z"></path>
+                    </svg>
+                </button>
+                <button onmousedown="event.preventDefault();" onclick="formatText('justifyleft')">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 15h6v2h-6v-2zm-12 4h18v-2H3v2zm0-8h18v-2H3v2zm0-4h12v2H3V7zm0-4h18v-2H3v2z"></path>
+                    </svg>
+                </button>
+                <button onmousedown="event.preventDefault();" onclick="formatText('insertOrderedList')">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 13.5V12h-2v1.5H7zm0 4V16h-2v1.5H7zm0-8V8h-2v1.5H7zM11 19h10v-2H11v2zM3 7v1.5H2v-1.5H3zm0 4.5v1.5H2v-1.5H3zM11 11h10V9H11v2zm-4-4v1.5H2V7H-2zm0 8V12h-2v1.5H7zm0 4V16h-2v1.5H7zm0-8V8h-2v1.5H7zM11 5h10V3H11v2z"></path>
+                    </svg>
+                </button>
+                <button onmousedown="event.preventDefault();" onclick="formatText('insertUnorderedList')">
+                    <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 13.5v-1.5h-2v1.5H7zm0 4v-1.5h-2v1.5H7zm0-8v-1.5h-2v1.5H7zM11 19h10v-2H11v2zm-4-4v-1.5h-2v1.5H7zm0 4v-1.5h-2v1.5H7zm0-8v-1.5h-2v1.5H7zM11 11h10V9H11v2zm-4-4v-1.5h-2v1.5H7zM11 5h10V3H11v2z"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- منطقة محرر النصوص الغني -->
+            <div id="notesRichTextEditor" contenteditable="true" class="rich-text-editor"></div>
+            <div class="flex justify-end gap-3 mt-4">
+                <button id="saveNotesButton"
+                        class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    حفظ
+                </button>
+                <button id="closeNotesModalButton"
+                        class="bg-gray-400 text-white p-3 rounded-lg hover:bg-gray-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal (for category deletion) -->
+    <div id="confirmationModal" class="modal-overlay hidden confirmation-modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 text-right">تأكيد الحذف</h3>
+            <p id="confirmationMessage" class="text-gray-700 mb-6 text-right">هل أنت متأكد أنك تريد حذف هذا التصنيف؟</p>
+            <div class="flex justify-end gap-3 mt-4">
+                <button id="confirmDeleteButton"
+                        class="bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    تأكيد الحذف
+                </button>
+                <button id="cancelDeleteButton"
+                        class="bg-gray-400 text-white p-3 rounded-lg hover:bg-gray-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="resetConfirmationModal" class="modal-overlay hidden confirmation-modal">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 text-right">تأكيد تصفير البيانات</h3>
+            <p class="text-gray-700 mb-6 text-right">هل أنت متأكد أنك تريد تصفير جميع المهام والتصنيفات والإعدادات؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+            <div class="flex justify-end gap-3 mt-4">
+                <button id="confirmResetButton"
+                        class="bg-red-600 text-white p-3 rounded-lg hover:bg-red-800 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    تأكيد التصفير
+                </button>
+                <button id="cancelResetButton"
+                        class="bg-gray-400 text-white p-3 rounded-lg hover:bg-gray-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- قسم إدارة التصنيفات (مخفي مبدئيًا - يظهر كـ modal) -->
+    <div id="categoryManagementSection" class="category-management-overlay hidden">
+        <div class="category-management-content">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">إدارة التصنيفات (إضافة وحذف)</h2>
+            <div class="flex flex-col sm:flex-row gap-2 mb-3">
+                <input type="text" id="categoryInput" placeholder="أضف تصنيفًا جديدًا..."
+                       class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-right">
+                <button id="addCategoryButton"
+                        class="bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-md flex-shrink-0 w-full-sm">
+                    أضف تصنيف
+                </button>
+            </div>
+            <select id="categorySelectDelete" class="mt-3 w-full p-3 border border-gray-300 rounded-lg text-gray-700 text-right">
+                <option value="">اختر تصنيف لحذفه...</option>
+            </select>
+            <button id="deleteCategoryButton"
+                    class="mt-3 w-full bg-red-500 text-white p-3 rounded-lg hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                حذف التصنيف المحدد
+            </button>
+            <div class="flex justify-end mt-4">
+                <button id="closeCategoryManagementButton"
+                        class="bg-gray-400 text-white p-3 rounded-lg hover:bg-gray-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تطبيق الثيم المفضل عند تحميل المستند وقبل عرض المحتوى لتجنب وميض الألوان
+        document.documentElement.classList.add(localStorage.getItem('theme') || 'light');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const appLogo = document.getElementById('appLogo');
+            const logoUpload = document.getElementById('logoUpload');
+
+            const toggleDarkModeButton = document.getElementById('toggleDarkModeButton');
+            const toggleWidthButton = document.getElementById('toggleWidthButton');
+            const appContainer = document.getElementById('appContainer'); // الوعاء الرئيسي للتطبيق
+
+            const taskInput = document.getElementById('taskInput');
+            const addTaskButton = document.getElementById('addTaskButton');
+            const noTasksMessage = document.getElementById('noTasksMessage');
+            const taskCategorySelect = document.getElementById('taskCategorySelect');
+            const quickAddCategoryInput = document.getElementById('quickAddCategoryInput');
+            const quickAddCategoryButton = document.getElementById('quickAddCategoryButton');
+
+            const notesModal = document.getElementById('notesModal');
+            const notesRichTextEditor = document.getElementById('notesRichTextEditor');
+            const saveNotesButton = document.getElementById('saveNotesButton');
+            const closeNotesModalButton = document.getElementById('closeNotesModalButton');
+
+            const confirmationModal = document.getElementById('confirmationModal');
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+            const cancelDeleteButton = document.getElementById('cancelDeleteButton');
+
+            // عناصر زر ووحدة تصفير البيانات
+            const resetAllDataButton = document.getElementById('resetAllDataButton');
+            const resetConfirmationModal = document.getElementById('resetConfirmationModal');
+            const confirmResetButton = document.getElementById('confirmResetButton');
+            const cancelResetButton = document.getElementById('cancelResetButton');
+
+            const categoryManagementSection = document.getElementById('categoryManagementSection');
+            const toggleCategoryManagementButton = document.getElementById('toggleCategoryManagementButton');
+            const categoryInputInManagement = categoryManagementSection.querySelector('#categoryInput');
+            const addCategoryButtonInManagement = categoryManagementSection.querySelector('#addCategoryButton');
+            const categorySelectDeleteInManagement = categoryManagementSection.querySelector('#categorySelectDelete');
+            const deleteCategoryButtonInManagement = categoryManagementSection.querySelector('#deleteCategoryButton');
+            const closeCategoryManagementButton = categoryManagementSection.querySelector('#closeCategoryManagementButton');
+
+
+            let currentTaskBeingEdited = null;
+            let categoryToDeleteConfirmed = '';
+
+            // وظيفة تحميل الشعار من Local Storage عند بدء تشغيل التطبيق
+            function loadLogo() {
+                const savedLogo = localStorage.getItem('appLogo');
+                if (savedLogo) {
+                    appLogo.src = savedLogo;
+                } else {
+                    appLogo.src = 'https://placehold.co/96x96/cccccc/333333?text=%E2%9A%99';
+                }
+            }
+
+            // معالج حدث لتغيير الشعار
+            logoUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        appLogo.src = e.target.result;
+                        localStorage.setItem('appLogo', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Dark Mode Logic
+            function applyThemePreference() {
+                const theme = localStorage.getItem('theme') || 'light';
+                document.documentElement.classList.remove('light', 'dark');
+                document.documentElement.classList.add(theme);
+                toggleDarkModeButton.textContent = theme === 'dark' ? 'الوضع النهاري' : 'الوضع الليلي';
+            }
+
+            toggleDarkModeButton.addEventListener('click', () => {
+                let currentTheme = localStorage.getItem('theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                applyThemePreference();
+            });
+
+            // Width Control Logic
+            function applyWidthPreference() {
+                const widthPreference = localStorage.getItem('appWidth') || 'constrained';
+                if (widthPreference === 'full') {
+                    appContainer.classList.remove('max-w-4xl', 'mx-auto');
+                    appContainer.classList.add('max-w-full');
+                    toggleWidthButton.textContent = 'عرض مقيد';
+                } else {
+                    appContainer.classList.add('max-w-4xl', 'mx-auto');
+                    appContainer.classList.remove('max-w-full');
+                    toggleWidthButton.textContent = 'عرض كامل';
+                }
+            }
+
+            toggleWidthButton.addEventListener('click', () => {
+                let currentPreference = localStorage.getItem('appWidth') || 'constrained';
+                const newPreference = currentPreference === 'constrained' ? 'full' : 'constrained';
+                localStorage.setItem('appWidth', newPreference);
+                applyWidthPreference();
+            });
+
+            // Reset All Data Logic
+            resetAllDataButton.addEventListener('click', () => {
+                resetConfirmationModal.classList.remove('hidden');
+            });
+
+            confirmResetButton.addEventListener('click', () => {
+                localStorage.removeItem('dailyTasks'); // مسح المهام فقط
+                localStorage.removeItem('dailyTaskCategories'); // مسح التصنيفات فقط
+                
+                // إعادة تعيين الإعدادات الافتراضية
+                localStorage.setItem('theme', 'light');
+                localStorage.setItem('appWidth', 'constrained');
+
+                // إعادة تحميل جميع البيانات والواجهة
+                // لا يتم مسح الشعار المحفوظ في LocalStorage
+                loadLogo(); 
+                applyThemePreference();
+                applyWidthPreference();
+                loadCategories(); // سيعيد إنشاء "بدون تصنيف" كخيار إذا لم يكن موجوداً
+                loadTasks();
+
+                resetConfirmationModal.classList.add('hidden');
+                taskInput.value = '';
+                quickAddCategoryInput.value = '';
+                taskCategorySelect.value = '';
+                categoryInputInManagement.value = '';
+                categorySelectDeleteInManagement.value = '';
+            });
+
+            cancelResetButton.addEventListener('click', () => {
+                resetConfirmationModal.classList.add('hidden');
+            });
+
+
+            window.formatText = function(command, value = null) {
+                document.execCommand(command, false, value);
+                notesRichTextEditor.focus();
+            };
+
+            function loadCategories() {
+                let categories = JSON.parse(localStorage.getItem('dailyTaskCategories')) || [];
+                // لا نضيف "بدون تصنيف" هنا بشكل افتراضي إذا كانت القائمة فارغة
+                // سيتم التعامل مع "بدون تصنيف" إذا كان موجودًا في بيانات المهام
+                populateCategoryDropdowns(categories);
+                return categories;
+            }
+
+            function saveCategories(categories) {
+                localStorage.setItem('dailyTaskCategories', JSON.stringify(categories));
+            }
+
+            function addNewCategory(newCategory, selectAfterAdd = false) {
+                if (newCategory && newCategory.trim() !== '') {
+                    const categories = loadCategories();
+                    if (!categories.includes(newCategory)) {
+                        categories.push(newCategory);
+                        saveCategories(categories);
+                        populateCategoryDropdowns(categories);
+                        if (selectAfterAdd) {
+                            taskCategorySelect.value = newCategory;
+                        }
+                        return true;
+                    } else {
+                        console.log('التصنيف موجود بالفعل.');
+                        return false;
+                    }
+                }
+                return false;
+            }
+
+            function populateCategoryDropdowns(categories) {
+                taskCategorySelect.innerHTML = '<option value="">بدون تصنيف</option>';
+                categorySelectDeleteInManagement.innerHTML = '<option value="">اختر تصنيف لحذفه...</option>';
+
+                // إضافة خيار "بدون تصنيف" إلى قائمة الحذف في إدارة التصنيفات إذا لم يكن موجوداً
+                // لا نضيفها مباشرة إلى الكاتيجوريز، بل فقط إلى القائمة المنسدلة
+                const uncategorizedOptionInDelete = document.createElement('option');
+                uncategorizedOptionInDelete.value = 'بدون تصنيف';
+                uncategorizedOptionInDelete.textContent = 'بدون تصنيف';
+                categorySelectDeleteInManagement.appendChild(uncategorizedOptionInDelete);
+
+                categories.forEach(category => {
+                    const option1 = document.createElement('option');
+                    option1.value = category;
+                    option1.textContent = category;
+                    taskCategorySelect.appendChild(option1);
+
+                    // لا تكرر "بدون تصنيف" إذا كان موجوداً في قائمة categories
+                    if (category !== 'بدون تصنيف') {
+                        const option2 = document.createElement('option');
+                        option2.value = category;
+                        option2.textContent = category;
+                        categorySelectDeleteInManagement.appendChild(option2);
+                    }
+                });
+            }
+
+            function getOrCreateCategoryList(categoryName) {
+                const safeCategoryName = categoryName ? categoryName.replace(/\s+/g, '-') : 'بدون-تصنيف';
+                let categoryDiv = document.getElementById(`category-${safeCategoryName}`);
+                let categoryUl;
+
+                if (!categoryDiv) {
+                    categoryDiv = document.createElement('div');
+                    categoryDiv.id = `category-${safeCategoryName}`;
+                    categoryDiv.className = 'bg-gray-100 p-4 rounded-lg shadow-md';
+                    categoryDiv.style.direction = 'rtl';
+
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.className = 'text-lg font-semibold text-gray-800 mb-3 text-right';
+                    categoryTitle.textContent = categoryName || 'بدون تصنيف';
+
+                    const taskCategoriesContainer = document.getElementById('taskCategoriesContainer');
+                    categoryUl = document.createElement('ul');
+                    categoryUl.className = 'space-y-2';
+
+                    categoryDiv.appendChild(categoryTitle);
+                    categoryDiv.appendChild(categoryUl);
+                    taskCategoriesContainer.appendChild(categoryDiv);
+                } else {
+                    categoryUl = categoryDiv.querySelector('ul');
+                }
+                return categoryUl;
+            }
+
+            quickAddCategoryButton.addEventListener('click', () => {
+                const newCategory = quickAddCategoryInput.value.trim();
+                if (addNewCategory(newCategory, true)) {
+                    quickAddCategoryInput.value = '';
+                }
+            });
+
+            quickAddCategoryInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const newCategory = quickAddCategoryInput.value.trim();
+                    if (addNewCategory(newCategory, true)) {
+                        quickAddCategoryInput.value = '';
+                    }
+                }
+            });
+
+            addCategoryButtonInManagement.addEventListener('click', () => {
+                const newCategory = categoryInputInManagement.value.trim();
+                if (addNewCategory(newCategory)) {
+                    categoryInputInManagement.value = '';
+                }
+            });
+
+            deleteCategoryButtonInManagement.addEventListener('click', () => {
+                const categoryToDelete = categorySelectDeleteInManagement.value;
+                if (categoryToDelete === '') {
+                    console.log('يرجى اختيار تصنيف لحذفه من القائمة.');
+                    return;
+                }
+                categoryToDeleteConfirmed = categoryToDelete;
+                confirmationMessage.textContent = `هل أنت متأكد أنك تريد حذف التصنيف "${categoryToDelete}"؟ سيتم نقل المهام التابعة له إلى "بدون تصنيف".`;
+                confirmationModal.classList.remove('hidden');
+            });
+
+            confirmDeleteButton.addEventListener('click', () => {
+                let categories = loadCategories();
+                categories = categories.filter(cat => cat !== categoryToDeleteConfirmed);
+                
+                saveCategories(categories);
+                populateCategoryDropdowns(categories);
+
+                let tasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
+                tasks = tasks.map(task => {
+                    if (task.category === categoryToDeleteConfirmed) {
+                        task.category = '';
+                    }
+                    return task;
+                });
+                localStorage.setItem('dailyTasks', JSON.stringify(tasks));
+                
+                const safeCategoryName = categoryToDeleteConfirmed ? categoryToDeleteConfirmed.replace(/\s+/g, '-') : 'بدون-تصنيف';
+                const categoryDivToRemove = document.getElementById(`category-${safeCategoryName}`);
+                if (categoryDivToRemove) {
+                    categoryDivToRemove.remove();
+                }
+
+                document.getElementById('taskCategoriesContainer').innerHTML = '';
+                loadTasks(); 
+
+                confirmationModal.classList.add('hidden');
+                taskCategorySelect.value = '';
+                categorySelectDeleteInManagement.value = '';
+            });
+
+            cancelDeleteButton.addEventListener('click', () => {
+                confirmationModal.classList.add('hidden');
+                categoryToDeleteConfirmed = '';
+            });
+
+            function loadTasks() {
+                const taskCategoriesContainer = document.getElementById('taskCategoriesContainer');
+                taskCategoriesContainer.innerHTML = '';
+                const tasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
+
+                const categorizedTasks = tasks.reduce((acc, task) => {
+                    const category = task.category || '';
+                    if (!acc[category]) {
+                        acc[category] = [];
+                    }
+                    acc[category].push(task);
+                    return acc;
+                }, {});
+
+                const sortedCategories = Object.keys(categorizedTasks).sort((a, b) => {
+                    if (a === '') return -1;
+                    if (b === '') return 1;
+                    return a.localeCompare(b, 'ar');
+                });
+
+                sortedCategories.forEach(category => {
+                    if (categorizedTasks[category].length > 0) {
+                        categorizedTasks[category].forEach(task => {
+                            addTaskToDOM(task.text, task.category, task.completed, task.notes || '', false);
+                        });
+                    }
+                });
+                updateNoTasksMessage();
+            }
+
+            function saveTasks() {
+                const tasks = [];
+                const taskCategoriesContainer = document.getElementById('taskCategoriesContainer');
+                taskCategoriesContainer.querySelectorAll('li').forEach(listItem => {
+                    const taskText = listItem.querySelector('.task-text').textContent;
+                    const isCompleted = listItem.classList.contains('task-completed');
+                    let taskCategory = listItem.closest('.bg-gray-100')?.querySelector('h3')?.textContent;
+                    if (taskCategory === 'بدون تصنيف') {
+                        taskCategory = '';
+                    }
+                    const notes = listItem.dataset.notes || '';
+                    tasks.push({ text: taskText, category: taskCategory, completed: isCompleted, notes: notes });
+                });
+                localStorage.setItem('dailyTasks', JSON.stringify(tasks));
+            }
+
+            function addTaskToDOM(taskText, taskCategory = '', isCompleted = false, taskNotes = '', save = true) {
+                if (taskText.trim() === '') {
+                    return;
+                }
+
+                const targetUl = getOrCreateCategoryList(taskCategory);
+
+                const listItem = document.createElement('li');
+                listItem.className = 'flex items-center justify-between bg-white p-3 rounded-lg shadow-sm';
+                listItem.style.direction = 'rtl';
+                if (isCompleted) {
+                    listItem.classList.add('task-completed');
+                }
+                listItem.dataset.notes = taskNotes;
+
+                const taskContentDiv = document.createElement('div');
+                taskContentDiv.className = 'task-content-wrapper';
+
+                const taskSpan = document.createElement('span');
+                taskSpan.textContent = taskText;
+                taskSpan.className = 'text-gray-700 font-medium task-text';
+                taskSpan.setAttribute('contenteditable', 'false');
+
+                taskContentDiv.appendChild(taskSpan);
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'flex items-center space-x-2';
+                actionsDiv.style.direction = 'ltr';
+
+                const completeButton = document.createElement('button');
+                completeButton.className = 'p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition duration-300';
+                completeButton.innerHTML = `
+                    <svg class="action-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 13l4 4L19 7"></path>
+                    </svg>
+                `;
+                completeButton.onclick = function() {
+                    listItem.classList.toggle('task-completed');
+                    saveTasks();
+                };
+                actionsDiv.appendChild(completeButton);
+
+                const addNotesButton = document.createElement('button');
+                addNotesButton.className = 'p-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-600 transition duration-300 hidden';
+                addNotesButton.innerHTML = `
+                    <svg class="action-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                `;
+                addNotesButton.onclick = function(e) {
+                    currentTaskBeingEdited = listItem;
+                    notesRichTextEditor.innerHTML = listItem.dataset.notes || '';
+                    notesModal.classList.remove('hidden');
+                    notesRichTextEditor.focus();
+                    e.stopPropagation();
+                };
+                actionsDiv.appendChild(addNotesButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition duration-300 hidden';
+                deleteButton.innerHTML = `
+                    <svg class="action-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                `;
+                deleteButton.onclick = function(e) {
+                    listItem.remove();
+                    saveTasks();
+                    const targetUl = listItem.closest('ul');
+                    if (targetUl && targetUl.children.length === 0) {
+                        const parentDiv = targetUl.closest('.bg-gray-100');
+                        if (parentDiv) {
+                            parentDiv.remove();
+                        }
+                    }
+                    updateNoTasksMessage();
+                    e.stopPropagation();
+                };
+                actionsDiv.appendChild(deleteButton);
+
+                taskSpan.onclick = function() {
+                    if (taskSpan.getAttribute('contenteditable') === 'false') {
+                        taskSpan.setAttribute('contenteditable', 'true');
+                        taskSpan.focus();
+                        completeButton.classList.add('hidden');
+                        addNotesButton.classList.remove('hidden');
+                        deleteButton.classList.remove('hidden');
+                    }
+                };
+
+                taskSpan.onblur = function(e) {
+                    if (e.relatedTarget && (e.relatedTarget === addNotesButton || e.relatedTarget === deleteButton || actionsDiv.contains(e.relatedTarget))) {
+                        return;
+                    }
+
+                    taskSpan.setAttribute('contenteditable', 'false');
+                    saveTasks();
+                    completeButton.classList.remove('hidden');
+                    addNotesButton.classList.add('hidden');
+                    deleteButton.classList.add('hidden');
+                };
+
+                taskSpan.onkeydown = function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        taskSpan.blur();
+                    }
+                };
+
+                listItem.appendChild(taskContentDiv);
+                listItem.appendChild(actionsDiv);
+                targetUl.appendChild(listItem);
+
+                if (save) {
+                    saveTasks();
+                }
+                updateNoTasksMessage();
+            }
+
+            function updateNoTasksMessage() {
+                const totalTasks = document.getElementById('taskCategoriesContainer').querySelectorAll('li').length;
+                if (totalTasks === 0) {
+                    noTasksMessage.classList.remove('hidden');
+                } else {
+                    noTasksMessage.classList.add('hidden');
+                }
+            }
+
+            toggleCategoryManagementButton.addEventListener('click', () => {
+                categoryManagementSection.classList.remove('hidden');
+            });
+
+            closeCategoryManagementButton.addEventListener('click', () => {
+                categoryManagementSection.classList.add('hidden');
+            });
+
+            closeNotesModalButton.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+                notesRichTextEditor.innerHTML = '';
+                if (currentTaskBeingEdited && currentTaskBeingEdited.querySelector('.task-text')) {
+                    currentTaskBeingEdited.querySelector('.task-text').blur();
+                }
+                currentTaskBeingEdited = null;
+            });
+
+            saveNotesButton.addEventListener('click', () => {
+                if (currentTaskBeingEdited) {
+                    currentTaskBeingEdited.dataset.notes = notesRichTextEditor.innerHTML;
+                    saveTasks();
+                    if (currentTaskBeingEdited.querySelector('.task-text')) {
+                         currentTaskBeingEdited.querySelector('.task-text').blur();
+                    }
+                }
+                notesModal.classList.add('hidden');
+                notesRichTextEditor.innerHTML = '';
+                currentTaskBeingEdited = null;
+            });
+
+            addTaskButton.addEventListener('click', () => {
+                const taskText = taskInput.value;
+                const taskCategory = taskCategorySelect.value;
+                addTaskToDOM(taskText, taskCategory, false, '');
+                taskInput.value = '';
+                taskCategorySelect.value = '';
+            });
+
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const taskText = taskInput.value;
+                    const taskCategory = taskCategorySelect.value;
+                    addTaskToDOM(taskText, taskCategory, false, '');
+                    taskInput.value = '';
+                    taskCategorySelect.value = '';
+                }
+            });
+
+            loadLogo();
+            applyThemePreference(); // تطبيق الوضع المفضل عند التحميل
+            applyWidthPreference(); // تطبيق عرض المحتوى المفضل عند التحميل
+            loadCategories();
+            loadTasks();
+        });
+    </script>
+</body>
+</html>
