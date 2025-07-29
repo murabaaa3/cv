@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محادثة فورية آمنة ومشفّرة</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo for Arabic text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* Custom scrollbar for the textarea */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #2d3748; /* gray-800 */
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #4a5568; /* gray-600 */
+            border-radius: 20px;
+            border: 3px solid #2d3748; /* gray-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+    <div id="app-container" class="w-full max-w-3xl mx-auto p-4">
+
+        <!-- Join/Create Room View -->
+        <div id="room-view" class="text-center bg-gray-800 p-8 rounded-2xl shadow-2xl">
+            <h1 class="text-3xl font-bold mb-4">محادثة فورية خاصة</h1>
+            <p class="text-gray-400 mb-6">أنشئ غرفة جديدة أو انضم إلى غرفة موجودة باستخدام معرّفها.</p>
+            <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                <input type="text" id="room-id-input" placeholder="أدخل معرّف الغرفة هنا..." class="flex-grow bg-gray-700 text-white placeholder-gray-500 p-3 rounded-lg border-2 border-transparent focus:border-indigo-500 focus:outline-none transition">
+                <button id="join-room-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                    انضمام
+                </button>
+            </div>
+            <div class="my-4 text-gray-500">أو</div>
+            <button id="create-room-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                إنشاء غرفة جديدة
+            </button>
+        </div>
+
+        <!-- Shared Text Area View -->
+        <div id="chat-view" class="hidden">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">المساحة المشتركة</h2>
+                    <button id="leave-room-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition">
+                        مغادرة
+                    </button>
+                </div>
+                <div class="mb-4 p-3 bg-gray-900 rounded-lg flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-400">معرّف الغرفة:</span>
+                        <strong id="room-id-display" class="text-indigo-400 select-all"></strong>
+                        <button id="copy-room-id" class="text-gray-400 hover:text-white" title="نسخ المعرّف">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2 text-green-400" title="المحادثة مشفرة من طرف إلى طرف">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <span class="text-sm hidden sm:inline">آمن</span>
+                    </div>
+                </div>
+                <textarea id="shared-textarea" class="w-full h-80 bg-gray-900 p-4 rounded-lg text-lg leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none"></textarea>
+                <div id="copy-notification" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0">
+                    تم نسخ المعرّف!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="alert-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-700 p-6 rounded-lg shadow-xl text-center w-full max-w-sm">
+            <p id="alert-message" class="mb-4 text-lg"></p>
+            <button id="alert-ok-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-8 rounded-lg transition">موافق</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Config ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'secure-chat-app';
+
+        // --- State ---
+        let app, auth, db;
+        let currentUserId = null;
+        let unsubscribeFromDoc = null; 
+        let isUpdatingTextarea = false;
+        let isAppInitialized = false;
+        let encryptionKey = null; // To hold the derived CryptoKey
+
+        // --- Crypto Helpers ---
+        const cryptoUtils = {
+            // Derives a key from the room ID (password)
+            async deriveKey(password) {
+                const enc = new TextEncoder();
+                const keyMaterial = await window.crypto.subtle.importKey(
+                    'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveKey']
+                );
+                // Use a static salt. The security comes from the password (room ID).
+                const salt = enc.encode('secure-chat-salt');
+                return window.crypto.subtle.deriveKey(
+                    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+                    keyMaterial,
+                    { name: 'AES-GCM', length: 256 },
+                    true,
+                    ['encrypt', 'decrypt']
+                );
+            },
+            // Encrypts text and returns base64 string (iv + ciphertext)
+            async encrypt(text, key) {
+                const enc = new TextEncoder();
+                const iv = window.crypto.getRandomValues(new Uint8Array(12));
+                const encryptedData = await window.crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv }, key, enc.encode(text)
+                );
+                const fullMessage = new Uint8Array(iv.length + encryptedData.byteLength);
+                fullMessage.set(iv);
+                fullMessage.set(new Uint8Array(encryptedData), iv.length);
+                return btoa(String.fromCharCode.apply(null, fullMessage));
+            },
+            // Decrypts base64 string
+            async decrypt(base64String, key) {
+                try {
+                    const binaryString = atob(base64String);
+                    const len = binaryString.length;
+                    const bytes = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    const iv = bytes.slice(0, 12);
+                    const data = bytes.slice(12);
+                    const decrypted = await window.crypto.subtle.decrypt(
+                        { name: 'AES-GCM', iv: iv }, key, data
+                    );
+                    return new TextDecoder().decode(decrypted);
+                } catch (e) {
+                    console.error("Decryption failed:", e);
+                    return null; // Indicates a failure to decrypt
+                }
+            }
+        };
+
+        // --- Firebase Init ---
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+        }
+
+        // --- DOM Elements ---
+        const roomView = document.getElementById('room-view');
+        const chatView = document.getElementById('chat-view');
+        const roomIdInput = document.getElementById('room-id-input');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const createRoomBtn = document.getElementById('create-room-btn');
+        const leaveRoomBtn = document.getElementById('leave-room-btn');
+        const sharedTextarea = document.getElementById('shared-textarea');
+        const roomIdDisplay = document.getElementById('room-id-display');
+        const copyRoomIdBtn = document.getElementById('copy-room-id');
+        const copyNotification = document.getElementById('copy-notification');
+        const alertModal = document.getElementById('alert-modal');
+        const alertMessage = document.getElementById('alert-message');
+        const alertOkBtn = document.getElementById('alert-ok-btn');
+
+        // --- UI Functions ---
+        function showAlert(message) {
+            alertMessage.textContent = message;
+            alertModal.classList.remove('hidden');
+        }
+        alertOkBtn.addEventListener('click', () => {
+            alertModal.classList.add('hidden');
+        });
+
+        // --- Auth ---
+        onAuthStateChanged(auth, (user) => {
+            if (user && !isAppInitialized) {
+                currentUserId = user.uid;
+                initializeAppLogic();
+                isAppInitialized = true;
+            }
+        });
+        
+        async function authenticateUser() {
+             try {
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Authentication failed:", error);
+                showAlert("فشل المصادقة. لا يمكن بدء التطبيق.");
+            }
+        }
+        
+        // --- Core Logic ---
+        async function setupRealtimeListener(roomId) {
+            if (unsubscribeFromDoc) unsubscribeFromDoc();
+            
+            // Derive the encryption key from the room ID
+            encryptionKey = await cryptoUtils.deriveKey(roomId);
+
+            const docRef = doc(db, `artifacts/${appId}/public/data/secure-chat`, roomId);
+            unsubscribeFromDoc = onSnapshot(docRef, async (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const encryptedContent = data.content;
+
+                    if (encryptedContent) {
+                        const decryptedText = await cryptoUtils.decrypt(encryptedContent, encryptionKey);
+                        if (decryptedText === null) {
+                            showAlert("فشل فك تشفير البيانات. تأكد من صحة معرّف الغرفة.");
+                            leaveRoom();
+                            return;
+                        }
+                        if (sharedTextarea.value !== decryptedText) {
+                            isUpdatingTextarea = true;
+                            const { selectionStart, selectionEnd } = sharedTextarea;
+                            sharedTextarea.value = decryptedText;
+                            sharedTextarea.setSelectionRange(selectionStart, selectionEnd);
+                            isUpdatingTextarea = false;
+                        }
+                    } else {
+                        // Document exists but content is empty, maybe from another client just joining
+                        sharedTextarea.value = '';
+                    }
+                } else {
+                    console.log("Document does not exist, creating it.");
+                    updateFirestoreContent(roomId, "");
+                }
+            }, (error) => {
+                console.error("Snapshot listener error:", error);
+                showAlert("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+                leaveRoom();
+            });
+        }
+
+        async function updateFirestoreContent(roomId, text) {
+            if (!roomId || !encryptionKey) return;
+            const encryptedText = await cryptoUtils.encrypt(text, encryptionKey);
+            const docRef = doc(db, `artifacts/${appId}/public/data/secure-chat`, roomId);
+            try {
+                await setDoc(docRef, { 
+                    content: encryptedText,
+                    lastUpdated: serverTimestamp() 
+                }, { merge: true });
+            } catch (error) {
+                console.error("Error writing to Firestore: ", error);
+            }
+        }
+
+        const debounce = (func, delay) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        };
+        const debouncedUpdate = debounce((roomId, text) => {
+            updateFirestoreContent(roomId, text);
+        }, 200);
+
+        function joinRoom(roomId) {
+            if (!roomId || !roomId.trim()) {
+                showAlert("يرجى إدخال معرّف غرفة صالح.");
+                return;
+            }
+            roomView.classList.add('hidden');
+            chatView.classList.remove('hidden');
+            roomIdDisplay.textContent = roomId;
+            setupRealtimeListener(roomId);
+            window.location.hash = roomId;
+        }
+
+        function leaveRoom() {
+            if (unsubscribeFromDoc) unsubscribeFromDoc();
+            unsubscribeFromDoc = null;
+            encryptionKey = null; // Clear the key on leaving
+            sharedTextarea.value = "";
+            chatView.classList.add('hidden');
+            roomView.classList.remove('hidden');
+            roomIdInput.value = "";
+            window.location.hash = '';
+        }
+        
+        function initializeAppLogic() {
+            createRoomBtn.addEventListener('click', () => {
+                const newRoomId = Math.random().toString(36).substring(2, 11); // longer ID
+                joinRoom(newRoomId);
+            });
+
+            joinRoomBtn.addEventListener('click', () => {
+                const roomId = roomIdInput.value.trim();
+                joinRoom(roomId);
+            });
+            
+            roomIdInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') joinRoomBtn.click(); });
+            leaveRoomBtn.addEventListener('click', leaveRoom);
+
+            sharedTextarea.addEventListener('input', () => {
+                if (isUpdatingTextarea) return;
+                const roomId = window.location.hash.substring(1);
+                debouncedUpdate(roomId, sharedTextarea.value);
+            });
+
+            copyRoomIdBtn.addEventListener('click', () => {
+                const textToCopy = roomIdDisplay.textContent;
+                const textArea = document.createElement('textarea');
+                textArea.style.position = 'fixed';
+                textArea.style.top = '-9999px';
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    copyNotification.classList.remove('opacity-0');
+                    setTimeout(() => copyNotification.classList.add('opacity-0'), 2000);
+                } catch (err) {
+                    showAlert('فشل نسخ المعرّف.');
+                }
+                document.body.removeChild(textArea);
+            });
+
+            if (window.location.hash) {
+                const roomId = window.location.hash.substring(1);
+                joinRoom(roomId);
+            }
+        }
+
+        // --- Initial Load ---
+        authenticateUser();
+
+    </script>
+</body>
+</html>
