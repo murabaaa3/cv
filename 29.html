@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مولد السيرة الذاتية – البطاقات الذكية</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Almarai:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&family=Roboto:wght@400;500;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --border-color: #cbd5e1;
+      --input-bg: #f8fafc;
+      
+      --paper-width: 210mm;
+      --paper-height: 297mm;
+      --resume-font-family: 'Tajawal', sans-serif;
+      --main-text-color: #000;
+      
+      --res-font-size: 14px;
+      --res-line-height: 1.5;
+      --res-section-gap: 20px;
+      --res-padding-top: 40px;
+      --res-padding-side: 40px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Tajawal', 'Inter', sans-serif;
+      background: var(--bg-color);
+      padding: 15px;
+      margin: 0;
+      color: var(--text-dark);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: row; 
+      overflow: hidden;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    /* --- Panel Styles --- */
+    .editor-panel {
+      flex: 1;
+      min-width: 340px;
+      background: #fff;
+      padding: 25px;
+      overflow-y: auto;
+      height: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+    
+    .editor-panel::-webkit-scrollbar { width: 6px; }
+    .editor-panel::-webkit-scrollbar-track { background: transparent; }
+    .editor-panel::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+
+    .preview-panel {
+      flex: 0 0 55%; 
+      min-width: 320px;
+      background: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px;
+      overflow: auto;
+      position: relative;
+    }
+
+    /* --- Resizer Bar Style --- */
+    .resizer {
+      width: 12px;
+      background-color: #f1f5f9;
+      border-left: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      cursor: col-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .resizer:hover, .resizer.active { background-color: #e2e8f0; }
+    .resizer::after { content: "⋮"; color: #94a3b8; font-size: 14px; font-weight: bold; }
+
+    /* --- Header Row --- */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    h1 { 
+      font-size: 20px; margin: 0; 
+      color: var(--text-dark); font-weight: 800;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .btn-toggle-all {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Tajawal', sans-serif;
+    }
+    .btn-toggle-all:hover {
+      background: var(--input-bg);
+      color: var(--text-dark);
+      border-color: #94a3b8;
+    }
+    
+    label { display: block; font-weight: 600; font-size: 13px; margin-top: 12px; color: var(--text-dark); margin-bottom: 6px; }
+    
+    input[type="text"], textarea, select {
+      width: 100%; 
+      padding: 12px 14px; 
+      background: var(--input-bg);
+      border: 1px solid var(--border-color); 
+      border-radius: 8px;
+      font-size: 14px; 
+      font-family: inherit; 
+      color: var(--text-dark);
+      transition: all 0.2s ease;
+    }
+    
+    input:focus, textarea:focus, select:focus { 
+      background: #fff;
+      border-color: var(--primary-color); 
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+      outline: none; 
+    }
+    
+    textarea { min-height: 85px; resize: vertical; }
+
+    /* --- Modern Cards (Entries) --- */
+    .entry-card { 
+      background: #fff; 
+      border: 1px solid var(--border-color); 
+      padding: 16px; 
+      border-radius: 10px; 
+      margin-bottom: 12px; 
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .entry-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #94a3b8; }
+    
+    .entry-row { display: flex; gap: 12px; margin-bottom: 12px; }
+    .entry-row input { flex: 1; }
+    
+    .btn-remove { 
+      background: #fee2e2; color: #ef4444; 
+      border: none; padding: 6px 12px; 
+      border-radius: 6px; font-size: 12px; 
+      cursor: pointer; margin-top: 8px; 
+      font-weight: 600; transition: background 0.2s;
+    }
+    .btn-remove:hover { background: #fecaca; }
+
+    .btn-add { 
+      background: #f0fdf4; color: #16a34a; 
+      border: 1px dashed #16a34a; 
+      display: block;
+      padding: 10px; cursor: pointer; 
+      border-radius: 8px; font-weight: 600; margin-top: 8px; 
+      transition: all 0.2s;
+    }
+    .btn-add:hover { background: #dcfce7; }
+
+    /* --- Modern Accordion (Details) --- */
+    details { 
+      background: #fff; 
+      border: 1px solid var(--border-color); 
+      border-radius: 10px; 
+      margin-bottom: 16px; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+      overflow: hidden; 
+    }
+    
+    details[open] { 
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); 
+      border-color: #94a3b8;
+    }
+    
+    details.layout-controls { background: #fff7ed; border-color: #ffedd5; }
+    details.layout-controls[open] { border-color: #fed7aa; }
+    details.layout-controls summary { color: #ea580c; }
+
+    summary { 
+      padding: 14px 18px; 
+      cursor: pointer; 
+      font-weight: 700; 
+      font-size: 14px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      list-style: none; 
+      user-select: none; 
+      background: inherit;
+      transition: background 0.2s;
+    }
+    summary:hover { background-color: #f8fafc; }
+    
+    summary::-webkit-details-marker { display: none; }
+    summary::after { 
+      content: "❯"; 
+      font-size: 12px; 
+      color: #94a3b8; 
+      transition: transform 0.3s; 
+    }
+    details[open] summary::after { transform: rotate(90deg); }
+    details[open] summary { 
+      border-bottom: 1px solid var(--border-color); 
+      margin-bottom: 15px; 
+    }
+    
+    details > *:not(summary) { 
+      margin-left: 18px; 
+      margin-right: 18px; 
+      margin-bottom: 18px; 
+      width: calc(100% - 36px); 
+    }
+
+    /* --- Draggable Styles --- */
+    .sortable-section-container { display: flex; flex-direction: column; }
+    .sortable-section-container details { cursor: grab; }
+    .sortable-section-container details.dragging { opacity: 0.5; border: 2px dashed var(--primary-color); cursor: grabbing; }
+    .drag-handle-icon { color: #cbd5e1; margin-left: 10px; font-size: 16px; cursor: grab; }
+    .drag-handle-icon:hover { color: var(--text-dark); }
+
+    .control-item { margin-top: 15px; display: flex; align-items: center; gap: 12px; }
+    .control-item label { margin: 0; min-width: 80px; font-size: 12px; color: var(--text-light); }
+    .control-item input[type="range"] { flex: 1; accent-color: var(--primary-color); }
+
+    /* --- Buttons & Groups Layout --- */
+    
+    /* 1. Tools Grid (2x2) */
+    .tools-section {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    .tools-header {
+        font-size: 12px; font-weight: 800; color: #64748b;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        margin-bottom: 10px; text-align: center;
+    }
+    .ai-btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    
+    .tool-btn { 
+      flex: 1 1 45%; 
+      padding: 10px; border: none; border-radius: 6px; 
+      cursor: pointer; font-size: 12px; font-weight: 700; 
+      color: #fff; display: flex; align-items: center; justify-content: center; 
+      gap: 6px; transition: all 0.2s; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .tool-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); opacity: 0.95; }
+    
+    /* 2. Helper Buttons (Row) */
+    .helper-btn-group {
+        display: flex; gap: 10px; margin-bottom: 20px; /* Added margin bottom */
+    }
+    .btn-sample {
+        flex: 2;
+        background: #f1f5f9; color: var(--text-dark);
+        border: 1px solid var(--border-color);
+        padding: 12px; border-radius: 8px;
+        font-weight: 700; font-size: 13px; cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-sample:hover { background: #e2e8f0; border-color: #94a3b8; }
+    
+    .btn-clear {
+        flex: 1;
+        background: #fff1f2; color: #e11d48;
+        border: 1px solid #fecdd3;
+        padding: 12px; border-radius: 8px;
+        font-weight: 700; font-size: 13px; cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-clear:hover { background: #ffe4e6; border-color: #fb7185; }
+
+    /* 3. Main Actions (Bottom Row) */
+    .main-btn-group { display: flex; gap: 10px; margin-top: 10px; }
+    .main-btn { 
+      width: 100%; padding: 14px; 
+      background: #0f172a; 
+      color: #fff; border: none; border-radius: 8px; 
+      cursor: pointer; font-weight: 700; font-size: 14px;
+      transition: transform 0.1s, opacity 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .main-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    
+    /* Colors */
+    .btn-ai { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+    .btn-paste { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
+    .btn-export { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; }
+    .btn-import { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+
+    /* --- Import Modal --- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6); 
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none; justify-content: center; align-items: center;
+    }
+    .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-box {
+      background: #fff; width: 550px; max-width: 90%;
+      padding: 25px; border-radius: 16px; 
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .modal-title { font-weight: 800; font-size: 18px; color: var(--text-dark); margin-bottom: 0; border-bottom: none; }
+    .modal-section { border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; background: #f8fafc; }
+    .modal-section-title { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; display: block; }
+    
+    .json-textarea { 
+      width: 100%; height: 150px; 
+      font-family: 'Monaco', 'Consolas', monospace; 
+      font-size: 13px; 
+      border: 1px solid var(--border-color); 
+      border-radius: 8px; padding: 12px; 
+      direction: ltr; background: #fff; 
+      color: #334155;
+    }
+    .json-textarea:focus { border-color: var(--primary-color); }
+    
+    .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; }
+    
+    .btn-paste-clipboard { 
+      padding: 6px 12px; font-size: 12px; 
+      background: #e0e7ff; color: #4338ca; 
+      border: none; border-radius: 6px; 
+      cursor: pointer; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-paste-clipboard:hover { background: #c7d2fe; }
+    
+    /* Resume Paper */
+    .resume-paper {
+      width: var(--paper-width); 
+      min-width: var(--paper-width);
+      min-height: var(--paper-height);
+      background: #fff; padding: var(--res-padding-top) var(--res-padding-side);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      position: relative;
+      margin: auto; 
+    }
+    .resume-paper::after { content: ""; position: absolute; top: 282mm; left: 0; right: 0; border-bottom: 2px dashed red; opacity: 0.5; pointer-events: none; }
+    .resume-paper::before { content: "حد الأمان للطباعة"; position: absolute; top: calc(282mm - 20px); left: 10px; font-size: 11px; color: red; background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid red; pointer-events: none; }
+
+    .resume-content { font-size: var(--res-font-size); line-height: var(--res-line-height); font-family: var(--resume-font-family); color: var(--main-text-color); }
+    .res-header { text-align: center; margin-bottom: var(--res-section-gap); }
+    .res-name { font-size: calc(var(--res-font-size) * 2); font-weight: 800; margin-bottom: 5px; text-transform: uppercase; }
+    .res-contact { font-size: calc(var(--res-font-size) * 0.95); font-weight: 500; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .res-section { margin-bottom: var(--res-section-gap); }
+    .res-section-title { font-size: calc(var(--res-font-size) * 1.2); font-weight: 800; border-bottom: 2px solid #000; padding-bottom: 3px; margin-bottom: calc(var(--res-section-gap) * 0.5); text-transform: uppercase; }
+    .res-job { margin-bottom: calc(var(--res-section-gap) * 0.6); }
+    .res-job-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; flex-wrap: wrap; }
+    .res-job-company { font-weight: 800; font-size: calc(var(--res-font-size) * 1.05); }
+    .res-job-role { font-weight: 600; font-size: calc(var(--res-font-size) * 1.05); color: #333; }
+    .res-job-date { font-size: var(--res-font-size); color: #555; font-weight: 500; }
+    .res-edu { margin-bottom: calc(var(--res-section-gap) * 0.5); }
+    .res-edu-degree { font-weight: 800; font-size: calc(var(--res-font-size) * 1.05); margin-bottom: 2px; }
+    .res-edu-details { font-size: var(--res-font-size); color: #222; padding-inline-start: 0; margin: 0; }
+    
+    .res-list { margin: 3px 0; list-style-type: disc; }
+    [dir="rtl"] .res-list { padding-right: 18px; padding-left: 0; }
+    [dir="ltr"] .res-list { padding-left: 18px; padding-right: 0; }
+    
+    .res-list li { margin-bottom: 2px; }
+    .res-simple-list li { margin-bottom: 2px; font-weight: 500; }
+    [dir="rtl"] .res-contact { direction: ltr; }
+
+    /* --- Direct Edit Mode Styles --- */
+    .btn-direct-edit {
+      position: absolute;
+      top: 20px; left: 20px;
+      background: #fff; color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      padding: 8px 15px; border-radius: 20px;
+      font-size: 12px; font-weight: bold;
+      cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex; align-items: center; gap: 5px;
+      z-index: 100; transition: all 0.2s;
+    }
+    .btn-direct-edit:hover { transform: scale(1.05); }
+    .btn-direct-edit.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    
+    /* Highlight editable areas when active */
+    .direct-edit-active [data-sync] {
+        outline: 1px dashed #94a3b8;
+        cursor: text;
+        border-radius: 2px;
+        transition: background 0.2s;
+    }
+    .direct-edit-active [data-sync]:hover {
+        background: rgba(255, 255, 255, 0.5);
+        outline: 1px solid var(--primary-color);
+    }
+    .direct-edit-active [data-sync]:focus {
+        background: #fff;
+        outline: 2px solid var(--primary-color);
+    }
+
+    @page { size: A4; margin: 0; }
+
+    @media print {
+      body, html { width: 210mm; height: 297mm; margin: 0; padding: 0; background: #fff; overflow: visible; }
+      .app-container { display: block; width: 100%; margin: 0; padding: 0; border-radius: 0; box-shadow: none; }
+      .editor-panel, .resizer, button, .ai-btn-group, .tools-divider, .btn-direct-edit { display: none !important; }
+      .preview-panel { width: 100% !important; min-width: 100%; overflow: visible; display: block; padding: 0; margin: 0; background: #fff; }
+      .resume-paper { box-shadow: none; padding: var(--res-padding-top) var(--res-padding-side) !important; margin: 0 auto; page-break-after: avoid; width: 210mm !important; max-width: 210mm !important; min-height: 297mm; }
+      .resume-paper::after, .resume-paper::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container" id="appContainer">
+  
+  <div class="editor-panel" id="editorPanel">
+    <!-- Header with Toggle Button -->
+    <div class="header-row">
+      <h1>🛠️ مولد السيرة الذاتية</h1>
+      <button class="btn-toggle-all" onclick="toggleAllSections()">▼ طي الكل</button>
+    </div>
+
+    <div style="display:flex; gap:15px; margin-bottom:20px;">
+      <div style="flex:1;">
+        <label style="margin-top:0">اللغة</label>
+        <select id="langSelect" onchange="renderResume()">
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <div style="flex:1;">
+        <label style="margin-top:0">الخط</label>
+        <select id="fontSelect" onchange="applyFont()">
+          <optgroup label="عربي">
+            <option value="Tajawal">تجوال</option>
+            <option value="Cairo">القاهرة</option>
+            <option value="Amiri">أميري</option>
+            <option value="IBM Plex Sans Arabic">IBM Plex</option>
+            <option value="Almarai">المراعي</option>
+            <option value="Noto Naskh Arabic">نسخ</option>
+          </optgroup>
+          <optgroup label="إنجليزي">
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Lora">Lora</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <details class="layout-controls" open>
+      <summary>⚙️ ضبط التنسيق</summary>
+      <div class="control-item"><label>حجم الخط:</label><input type="range" min="11" max="16" step="0.5" value="14" oninput="updateLayout(this.value, 'fontSize')"></div>
+      <div class="control-item"><label>تباعد الأسطر:</label><input type="range" min="1.1" max="1.8" step="0.1" value="1.5" oninput="updateLayout(this.value, 'lineHeight')"></div>
+      <div class="control-item"><label>بين الأقسام:</label><input type="range" min="5" max="30" step="2" value="20" oninput="updateLayout(this.value, 'sectionGap')"></div>
+      <div class="control-item"><label>الهوامش:</label><input type="range" min="15" max="60" step="5" value="40" oninput="updateLayout(this.value, 'padding')"></div>
+    </details>
+
+    <!-- Form Helpers (Moved Here) -->
+    <div class="helper-btn-group">
+        <button class="btn-sample" onclick="fillSampleData()">📝 تعبئة مثال</button>
+        <button class="btn-clear" onclick="clearFormData()">🗑️ مسح الكل</button>
+    </div>
+
+    <!-- Static Section: Personal Info (Usually Top) -->
+    <details class="section-group" open>
+      <summary>1. المعلومات الشخصية</summary>
+      <input type="text" id="inpName" placeholder="الاسم الكامل" oninput="renderResume()">
+      <div class="entry-row" style="margin-top:12px"><input type="text" id="inpPhone" placeholder="رقم الهاتف" oninput="renderResume()"><input type="text" id="inpEmail" placeholder="البريد الإلكتروني" oninput="renderResume()"></div>
+      <div class="entry-row"><input type="text" id="inpCity" placeholder="المدينة/البلد" oninput="renderResume()"><input type="text" id="inpNation" placeholder="الجنسية" oninput="renderResume()"></div>
+    </details>
+
+    <!-- Sortable Sections Container -->
+    <div id="sortable-sections" class="sortable-section-container">
+        <details class="section-group" id="sec-summary" draggable="true">
+          <summary><span style="display:flex;align-items:center;">2. الملخص المهني <span class="drag-handle-icon">⠿</span></span></summary>
+          <textarea id="inpSummary" placeholder="نبذة مختصرة..." oninput="renderResume()"></textarea>
+        </details>
+
+        <details class="section-group" id="sec-exp" draggable="true">
+          <summary><span style="display:flex;align-items:center;">3. الخبرة العملية <span class="drag-handle-icon">⠿</span></span></summary>
+          <div id="expContainer"></div>
+          <button class="btn-add" onclick="addExperienceItem()">+ إضافة وظيفة</button>
+        </details>
+
+        <details class="section-group" id="sec-edu" draggable="true">
+          <summary><span style="display:flex;align-items:center;">4. المؤهلات العلمية <span class="drag-handle-icon">⠿</span></span></summary>
+          <div id="eduContainer"></div>
+          <button class="btn-add" onclick="addEducationItem()">+ إضافة مؤهل</button>
+        </details>
+
+        <details class="section-group" id="sec-courses" draggable="true">
+          <summary><span style="display:flex;align-items:center;">5. الدورات (Courses) <span class="drag-handle-icon">⠿</span></span></summary>
+          <textarea id="inpCourses" placeholder="كل دورة في سطر جديد" oninput="renderResume()"></textarea>
+        </details>
+
+        <details class="section-group" id="sec-skills" draggable="true">
+          <summary><span style="display:flex;align-items:center;">6. المهارات (Skills) <span class="drag-handle-icon">⠿</span></span></summary>
+          <textarea id="inpSkills" placeholder="كل مهارة في سطر جديد" oninput="renderResume()"></textarea>
+        </details>
+
+        <details class="section-group" id="sec-langs" draggable="true">
+          <summary><span style="display:flex;align-items:center;">7. اللغات (Languages) <span class="drag-handle-icon">⠿</span></span></summary>
+          <textarea id="inpLangs" placeholder="كل لغة في سطر جديد" oninput="renderResume()"></textarea>
+        </details>
+    </div>
+
+    <!-- 1. Advanced Tools Section -->
+    <div class="tools-section">
+      <div class="tools-header">أدوات البيانات والذكاء الاصطناعي</div>
+      <div class="ai-btn-group">
+        <button class="tool-btn btn-ai" onclick="copyAiPrompt()">
+          <span>✨ نسخ التعليمات</span>
+        </button>
+        <button class="tool-btn btn-paste" onclick="openPasteModal()">
+          <span>📋 لصق كود JSON</span>
+        </button>
+        <button class="tool-btn btn-export" onclick="exportJson()">
+          <span>💾 تصدير JSON</span>
+        </button>
+        <button class="tool-btn btn-import" onclick="triggerFileImport()">
+          <span>📂 استيراد ملف</span>
+        </button>
+        <!-- Hidden File Input -->
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="handleFileImport(this)">
+      </div>
+    </div>
+
+    <!-- 3. Main Actions (Bottom Row) -->
+    <div class="main-btn-group">
+      <button class="main-btn" onclick="window.print()" style="background:#0f172a">طباعة / PDF</button>
+    </div>
+  </div>
+
+  <div class="resizer" id="dragHandle"></div>
+
+  <div class="preview-panel" id="previewPanel">
+    <button class="btn-direct-edit" id="btnDirectEdit" onclick="toggleDirectEdit()">✏️ تفعيل التعديل المباشر</button>
+    <div class="resume-paper">
+      <div id="resumeContent" class="resume-content" dir="rtl"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Paste Code Modal -->
+<div class="modal-overlay" id="pasteModal">
+  <div class="modal-box">
+    <div class="modal-title">لصق كود JSON</div>
+    
+    <div class="modal-header-actions">
+        <span style="font-size:13px; color:#64748b; font-weight:500;">الصق الكود الذي حصلت عليه من الذكاء الاصطناعي هنا:</span>
+        <button type="button" class="btn-paste-clipboard" onclick="pasteFromClipboard()">📋 لصق من الحافظة</button>
+    </div>
+    
+    <textarea class="json-textarea" id="pasteTextarea" placeholder='{ "name": "...", "experience": [...] }'></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" style="width:auto; margin:0" onclick="closePasteModal()">إلغاء</button>
+      <button class="main-btn" style="flex:none; width:auto; background:var(--primary-color);" onclick="processPastedCode()">تطبيق البيانات</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- Drag & Drop Logic for Sections ---
+  const draggables = document.querySelectorAll('#sortable-sections details');
+  const container = document.getElementById('sortable-sections');
+
+  draggables.forEach(draggable => {
+    draggable.addEventListener('dragstart', () => {
+      draggable.classList.add('dragging');
+    });
+
+    draggable.addEventListener('dragend', () => {
+      draggable.classList.remove('dragging');
+      renderResume(); // Re-render resume with new order
+    });
+  });
+
+  container.addEventListener('dragover', e => {
+    e.preventDefault();
+    const afterElement = getDragAfterElement(container, e.clientY);
+    const draggable = document.querySelector('.dragging');
+    if (afterElement == null) {
+      container.appendChild(draggable);
+    } else {
+      container.insertBefore(draggable, afterElement);
+    }
+  });
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('details:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  // --- Toggle All Sections Logic ---
+  let allOpen = true;
+  function toggleAllSections() {
+    const details = document.querySelectorAll('details');
+    allOpen = !allOpen;
+    details.forEach(d => {
+      d.open = allOpen;
+    });
+    const btn = document.querySelector('.btn-toggle-all');
+    btn.innerText = allOpen ? '▼ طي الكل' : '◀ فتح الكل';
+  }
+
+  // --- Resizer Logic ---
+  const resizer = document.getElementById('dragHandle');
+  const previewPanel = document.getElementById('previewPanel');
+  const appContainer = document.getElementById('appContainer');
+  let isResizing = false;
+
+  resizer.addEventListener('mousedown', () => { isResizing = true; document.body.style.cursor = 'col-resize'; resizer.classList.add('active'); document.body.style.userSelect = 'none'; });
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const containerRect = appContainer.getBoundingClientRect();
+    const newPreviewWidth = e.clientX - containerRect.left;
+    if (newPreviewWidth > containerRect.width * 0.2 && newPreviewWidth < containerRect.width * 0.8) {
+      previewPanel.style.flex = `0 0 ${newPreviewWidth}px`;
+    }
+  });
+  document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = ''; resizer.classList.remove('active'); document.body.style.userSelect = ''; });
+
+  // --- Resume Logic ---
+  const labels = {
+    ar: { summary: "الملخص المهني", exp: "الخبرة العملية", edu: "المؤهلات العلمية", courses: "الدورات", skills: "المهارات", langs: "اللغات", major: "التخصص:", uni: "الجامعة:", gpa: "المعدل التراكمي:", date: "تاريخ التخرج:" },
+    en: { summary: "SUMMARY", exp: "WORK EXPERIENCE", edu: "EDUCATION", courses: "COURSES", skills: "SKILLS", langs: "LANGUAGES", major: "Major:", uni: "University:", gpa: "GPA:", date: "Graduation Date:" }
+  };
+
+  function createInput(placeholder, value = '') {
+    const input = document.createElement('input'); input.type = 'text'; input.placeholder = placeholder; input.value = value; input.oninput = renderResume; return input;
+  }
+
+  function addExperienceItem(data = {}) {
+    const container = document.getElementById('expContainer');
+    const card = document.createElement('div'); card.className = 'entry-card exp-item';
+    const row1 = document.createElement('div'); row1.className = 'entry-row';
+    row1.appendChild(createInput('الشركة', data.company)); row1.appendChild(createInput('المسمى الوظيفي', data.role));
+    const row2 = document.createElement('div'); row2.className = 'entry-row';
+    row2.appendChild(createInput('التاريخ (مثال: 2020 - الان)', data.date));
+    const desc = document.createElement('textarea'); desc.placeholder = 'المهام...'; desc.value = data.desc || ''; desc.oninput = renderResume; desc.style.marginTop = '5px';
+    const delBtn = document.createElement('button'); delBtn.className = 'btn-remove'; delBtn.innerText = 'حذف'; delBtn.onclick = function() { container.removeChild(card); renderResume(); };
+    card.appendChild(row1); card.appendChild(row2); card.appendChild(desc); card.appendChild(delBtn);
+    container.appendChild(card); renderResume();
+  }
+
+  function addEducationItem(data = {}) {
+    const container = document.getElementById('eduContainer');
+    const card = document.createElement('div'); card.className = 'entry-card edu-item';
+    const row1 = document.createElement('div'); row1.className = 'entry-row';
+    row1.appendChild(createInput('الدرجة', data.degree)); row1.appendChild(createInput('التخصص', data.major));
+    const row2 = document.createElement('div'); row2.className = 'entry-row';
+    row2.appendChild(createInput('الجامعة', data.uni)); row2.appendChild(createInput('تاريخ التخرج', data.date));
+    const gpa = createInput('المعدل', data.gpa);
+    const delBtn = document.createElement('button'); delBtn.className = 'btn-remove'; delBtn.innerText = 'حذف'; delBtn.onclick = function() { container.removeChild(card); renderResume(); };
+    delBtn.style.marginTop = '10px';
+    card.appendChild(row1); card.appendChild(row2); card.appendChild(gpa); card.appendChild(delBtn);
+    container.appendChild(card); renderResume();
+  }
+
+  function applyFont() {
+    const f = document.getElementById('fontSelect').value;
+    let cssFont = (['Amiri','Lora','Noto Naskh Arabic'].includes(f)) ? `'${f}', serif` : `'${f}', sans-serif`;
+    document.documentElement.style.setProperty('--resume-font-family', cssFont);
+    renderResume();
+  }
+
+  function updateLayout(val, type) {
+    const root = document.documentElement;
+    if (type === 'fontSize') root.style.setProperty('--res-font-size', val + 'px');
+    if (type === 'lineHeight') root.style.setProperty('--res-line-height', val);
+    if (type === 'sectionGap') root.style.setProperty('--res-section-gap', val + 'px');
+    if (type === 'padding') { root.style.setProperty('--res-padding-top', val + 'px'); root.style.setProperty('--res-padding-side', (val * 1.2) + 'px'); }
+  }
+
+  // --- CORE: Data Collection (Used for AutoSave & Export) ---
+  function getFormData() {
+    const orderIds = [];
+    document.querySelectorAll('#sortable-sections details').forEach(el => {
+        orderIds.push(el.id);
+    });
+
+    const data = {
+      name: document.getElementById('inpName').value,
+      phone: document.getElementById('inpPhone').value,
+      email: document.getElementById('inpEmail').value,
+      city: document.getElementById('inpCity').value,
+      nation: document.getElementById('inpNation').value,
+      summary: document.getElementById('inpSummary').value,
+      experience: [],
+      education: [],
+      courses: document.getElementById('inpCourses').value,
+      skills: document.getElementById('inpSkills').value,
+      langs: document.getElementById('inpLangs').value,
+      langSelect: document.getElementById('langSelect').value,
+      fontSelect: document.getElementById('fontSelect').value,
+      sectionOrder: orderIds
+    };
+
+    document.querySelectorAll('.exp-item').forEach(item => {
+      const inputs = item.querySelectorAll('input');
+      data.experience.push({
+        company: inputs[0].value, role: inputs[1].value, date: inputs[2].value,
+        desc: item.querySelector('textarea').value
+      });
+    });
+
+    document.querySelectorAll('.edu-item').forEach(item => {
+      const inputs = item.querySelectorAll('input');
+      data.education.push({
+        degree: inputs[0].value, major: inputs[1].value, uni: inputs[2].value,
+        date: inputs[3].value, gpa: inputs[4].value
+      });
+    });
+    
+    return data;
+  }
+
+  function setFormData(data) {
+    if (data.sectionOrder && Array.isArray(data.sectionOrder)) {
+        const container = document.getElementById('sortable-sections');
+        data.sectionOrder.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) container.appendChild(el); 
+        });
+    }
+
+    document.getElementById('inpName').value = data.name || "";
+    document.getElementById('inpPhone').value = data.phone || "";
+    document.getElementById('inpEmail').value = data.email || "";
+    document.getElementById('inpCity').value = data.city || "";
+    document.getElementById('inpNation').value = data.nation || "";
+    document.getElementById('inpSummary').value = data.summary || "";
+    document.getElementById('inpCourses').value = data.courses || "";
+    document.getElementById('inpSkills').value = data.skills || "";
+    document.getElementById('inpLangs').value = data.langs || "";
+    
+    if(data.langSelect) document.getElementById('langSelect').value = data.langSelect;
+    if(data.fontSelect) {
+        document.getElementById('fontSelect').value = data.fontSelect;
+        applyFont(); 
+    }
+
+    document.getElementById('expContainer').innerHTML = '';
+    if (Array.isArray(data.experience)) {
+      data.experience.forEach(exp => addExperienceItem(exp));
+    }
+
+    document.getElementById('eduContainer').innerHTML = '';
+    if (Array.isArray(data.education)) {
+      data.education.forEach(edu => addEducationItem(edu));
+    }
+    
+    renderResume(); 
+  }
+
+  function saveToLocalStorage() {
+    const data = getFormData();
+    localStorage.setItem('resume_autosave', JSON.stringify(data));
+  }
+
+  // --- Direct Edit Logic ---
+  let isDirectEditMode = false;
+
+  function toggleDirectEdit() {
+    isDirectEditMode = !isDirectEditMode;
+    const btn = document.getElementById('btnDirectEdit');
+    const content = document.getElementById('resumeContent');
+    
+    if (isDirectEditMode) {
+      btn.innerText = "💾 حفظ وإنهاء التعديل";
+      btn.classList.add('active');
+      content.classList.add('direct-edit-active');
+      
+      // Add contenteditable to all synced elements
+      const syncElements = content.querySelectorAll('[data-sync]');
+      syncElements.forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+      });
+      
+      // Listen for changes
+      content.addEventListener('input', handlePreviewInput);
+      
+    } else {
+      btn.innerText = "✏️ تفعيل التعديل المباشر";
+      btn.classList.remove('active');
+      content.classList.remove('direct-edit-active');
+      
+      // Remove contenteditable
+      const syncElements = content.querySelectorAll('[data-sync]');
+      syncElements.forEach(el => {
+        el.removeAttribute('contenteditable');
+      });
+      
+      content.removeEventListener('input', handlePreviewInput);
+      
+      // Force Re-render to clean up any messy HTML/paste
+      renderResume();
+    }
+  }
+
+  function handlePreviewInput(e) {
+    const target = e.target;
+    const syncKey = target.getAttribute('data-sync');
+    if (!syncKey) return;
+
+    const newVal = target.innerText;
+
+    // Map sync key back to inputs
+    if (syncKey === 'name') document.getElementById('inpName').value = newVal;
+    else if (syncKey === 'phone') document.getElementById('inpPhone').value = newVal;
+    else if (syncKey === 'email') document.getElementById('inpEmail').value = newVal;
+    else if (syncKey === 'city') document.getElementById('inpCity').value = newVal;
+    else if (syncKey === 'nation') document.getElementById('inpNation').value = newVal;
+    else if (syncKey === 'summary') document.getElementById('inpSummary').value = newVal;
+    else if (syncKey === 'courses') document.getElementById('inpCourses').value = newVal;
+    else if (syncKey === 'skills') document.getElementById('inpSkills').value = newVal;
+    else if (syncKey === 'langs') document.getElementById('inpLangs').value = newVal;
+    else if (syncKey.startsWith('exp-')) {
+        const parts = syncKey.split('-');
+        const idx = parseInt(parts[1]);
+        const field = parts[2]; // company, role, date
+        const card = document.querySelectorAll('.exp-item')[idx];
+        if (card) {
+            const inputs = card.querySelectorAll('input');
+            if (field === 'company') inputs[0].value = newVal;
+            if (field === 'role') inputs[1].value = newVal;
+            if (field === 'date') inputs[2].value = newVal;
+            // Special case for description list editing
+            if (field === 'desc') {
+                // When editing the UL directly, we just want the text content for now
+                // to avoid complex HTML parsing. A better approach for lists is to grab individual LIs, 
+                // but for simplicity here, we take the innerText which preserves newlines.
+                card.querySelector('textarea').value = newVal;
+            }
+        }
+    }
+    else if (syncKey.startsWith('edu-')) {
+        const parts = syncKey.split('-');
+        const idx = parseInt(parts[1]);
+        const field = parts[2];
+        const card = document.querySelectorAll('.edu-item')[idx];
+        if (card) {
+            const inputs = card.querySelectorAll('input');
+            if (field === 'degree') inputs[0].value = newVal;
+            if (field === 'major') inputs[1].value = newVal;
+            if (field === 'uni') inputs[2].value = newVal;
+            if (field === 'date') inputs[3].value = newVal;
+            if (field === 'gpa') inputs[4].value = newVal;
+        }
+    }
+    
+    // Update LocalStorage quietly
+    saveToLocalStorage();
+  }
+
+  // --- Main Render Function ---
+  function renderResume() {
+    // If we are in Direct Edit Mode, DO NOT re-render entire HTML from inputs,
+    // because it kills the cursor focus in the preview.
+    if (isDirectEditMode) return;
+
+    saveToLocalStorage();
+
+    const lang = document.getElementById('langSelect').value;
+    const dir = lang === 'ar' ? 'rtl' : 'ltr';
+    const L = labels[lang];
+    const container = document.getElementById('resumeContent');
+    container.setAttribute('dir', dir);
+    const escape = (s) => s ? s.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+
+    // Helper for Sync Attributes
+    const syncAttr = (key) => `data-sync="${key}"`;
+
+    const name = document.getElementById('inpName').value;
+    const contactParts = [
+        {v: document.getElementById('inpPhone').value, k: 'phone'}, 
+        {v: document.getElementById('inpEmail').value, k: 'email'}, 
+        {v: document.getElementById('inpCity').value, k: 'city'}, 
+        {v: document.getElementById('inpNation').value, k: 'nation'}
+    ].filter(x => x.v && x.v.trim());
+    
+    let html = `<div class="res-header">
+        <div class="res-name" ${syncAttr('name')}>${escape(name)}</div>
+        <div class="res-contact" dir="ltr">
+            ${contactParts.map(c => `<span ${syncAttr(c.k)}>${escape(c.v.trim())}</span>`).join('<span style="margin:0 5px">|</span>')}
+        </div>
+    </div>`;
+
+    const sections = document.querySelectorAll('#sortable-sections details');
+    
+    sections.forEach(section => {
+        const id = section.id;
+        
+        if (id === 'sec-summary') {
+            const summary = document.getElementById('inpSummary').value;
+            if(summary.trim()) html += `<div class="res-section"><div class="res-section-title">${L.summary}</div><div ${syncAttr('summary')}>${escape(summary)}</div></div>`;
+        }
+        else if (id === 'sec-exp') {
+            const expItems = document.querySelectorAll('.exp-item');
+            if(expItems.length > 0){
+              html += `<div class="res-section"><div class="res-section-title">${L.exp}</div>`;
+              expItems.forEach((item, idx) => {
+                const inputs = item.querySelectorAll('input');
+                const desc = item.querySelector('textarea').value;
+                if(!inputs[0].value && !inputs[1].value) return;
+                // Added sync attribute to the UL list here for direct editing
+                html += `<div class="res-job">
+                  <ul class="res-list" style="margin-bottom:0; margin-top:0;"><li style="margin-bottom:2px"><span class="res-job-company" ${syncAttr(`exp-${idx}-company`)}>${escape(inputs[0].value)}</span></li></ul>
+                  <div style="padding-${dir==='rtl'?'right':'left'}: 18px;">
+                     <div class="res-job-header">
+                        <span class="res-job-role" ${syncAttr(`exp-${idx}-role`)}>${escape(inputs[1].value)}</span>
+                        ${inputs[2].value ? `<span style="color:#ccc; font-size:0.9em">|</span> <span class="res-job-date" ${syncAttr(`exp-${idx}-date`)}>${escape(inputs[2].value)}</span>` : ''}
+                     </div>
+                     ${desc ? `<ul class="res-list" ${syncAttr(`exp-${idx}-desc`)}>${desc.split(/[;؛\n]/).map(d => d.trim()).filter(d=>d).map(d => `<li>${escape(d)}</li>`).join('')}</ul>` : ''}
+                  </div></div>`;
+              });
+              html += `</div>`;
+            }
+        }
+        else if (id === 'sec-edu') {
+            const eduItems = document.querySelectorAll('.edu-item');
+            if(eduItems.length > 0){
+              html += `<div class="res-section"><div class="res-section-title">${L.edu}</div><ul class="res-list">`;
+              eduItems.forEach((item, idx) => {
+                const inputs = item.querySelectorAll('input');
+                if(!inputs[0].value && !inputs[2].value) return;
+                html += `<li class="res-edu">
+                  <span class="res-edu-degree" ${syncAttr(`edu-${idx}-degree`)}>${escape(inputs[0].value)}</span>
+                  <div class="res-edu-details" style="padding-${dir==='rtl'?'right':'left'}: 15px;">
+                    ${inputs[1].value ? `<div>${L.major} <span ${syncAttr(`edu-${idx}-major`)}>${escape(inputs[1].value)}</span></div>` : ''} 
+                    ${inputs[2].value ? `<div ${syncAttr(`edu-${idx}-uni`)}>${escape(inputs[2].value)}</div>` : ''} 
+                    ${inputs[4].value ? `<div>${L.gpa} <span ${syncAttr(`edu-${idx}-gpa`)}>${escape(inputs[4].value)}</span></div>` : ''} 
+                    ${inputs[3].value ? `<div>${L.date} <span ${syncAttr(`edu-${idx}-date`)}>${escape(inputs[3].value)}</span></div>` : ''}
+                  </div></li>`;
+              });
+              html += `</ul></div>`;
+            }
+        }
+        else if (id === 'sec-courses') {
+            const courses = document.getElementById('inpCourses').value;
+            if(courses.trim()) html += `<div class="res-section"><div class="res-section-title">${L.courses}</div><ul class="res-list res-simple-list" ${syncAttr('courses')}>${courses.split('\n').map(c => c.trim()).filter(c=>c).map(c => `<li>${escape(c)}</li>`).join('')}</ul></div>`;
+        }
+        else if (id === 'sec-skills') {
+            const skills = document.getElementById('inpSkills').value;
+            if(skills.trim()) html += `<div class="res-section"><div class="res-section-title">${L.skills}</div><ul class="res-list res-simple-list" ${syncAttr('skills')}>${skills.split('\n').map(s => s.trim()).filter(s=>s).map(s => `<li>${escape(s)}</li>`).join('')}</ul></div>`;
+        }
+        else if (id === 'sec-langs') {
+            const langs = document.getElementById('inpLangs').value;
+            if(langs.trim()) html += `<div class="res-section"><div class="res-section-title">${L.langs}</div><ul class="res-list res-simple-list" ${syncAttr('langs')}>${langs.split('\n').map(l => l.trim()).filter(l=>l).map(l => `<li>${escape(l)}</li>`).join('')}</ul></div>`;
+        }
+    });
+
+    container.innerHTML = html;
+  }
+
+  // --- Data & AI Tools Functions ---
+
+  function copyAiPrompt() {
+    const prompt = `
+أنت نظام آلي لاستخراج البيانات (JSON Parser). مهمتك هي تحويل النص العشوائي أدناه إلى صيغة JSON بدقة مطلقة ودون أي تفاعل بشري.
+
+القواعد الصارمة (نذير الخطأ):
+1. لا تطرح أي أسئلة توضيحية أبداً. اتخذ القرار الأفضل بنفسك.
+2. المخرج النهائي يجب أن يكون كود JSON فقط (Raw JSON). لا تضف أي مقدمات أو خاتمات نصية.
+3. تجاهل تماماً أي بيانات لا يوجد لها حقل في القالب أدناه (مثل الهوايات، تاريخ الميلاد، الحالة الاجتماعية).
+4. في حقل "city"، استخرج اسم المدينة فقط وتجاهل باقي العنوان التفصيلي.
+5. في حقل "experience"، ادرج جميع الخبرات المذكورة في النص داخل المصفوفة.
+6. في حال عدم وجود "ملخص مهني" في النص، قم بكتابة ملخص احترافي بناءً على الخبرات والمهارات المذكورة.
+7. في حال عدم ذكر "اللغات"، افترض وجود "العربية" و "الإنجليزية" وأضفهم للقائمة.
+
+القالب المطلوب:
+{
+  "name": "الاسم الكامل",
+  "phone": "رقم الهاتف",
+  "email": "الايميل",
+  "city": "المدينة فقط",
+  "nation": "الجنسية",
+  "summary": "الملخص المهني",
+  "experience": [
+    { "company": "اسم الشركة", "role": "المسمى الوظيفي", "date": "تاريخ البدء والانتهاء", "desc": "وصف المهام مفصول بأسطر جديدة" }
+  ],
+  "education": [
+    { "degree": "الدرجة العلمية", "major": "التخصص", "uni": "الجامعة", "date": "تاريخ التخرج", "gpa": "المعدل" }
+  ],
+  "courses": "قائمة الدورات كل دورة في سطر جديد",
+  "skills": "قائمة المهارات كل مهارة في سطر جديد",
+  "langs": "قائمة اللغات كل لغة في سطر جديد",
+  "warnings": ["اذكر هنا أي معلومات أساسية مفقودة من القالب، لا تذكر المعلومات التي تجاهلتها عمداً"]
+}
+اذا كانت معلومة غير موجودة اتركها فارغة نصيا "".
+البيانات هي:
+[الصق بيانات العميل هنا]
+    `;
+    navigator.clipboard.writeText(prompt.trim()).then(() => {
+      alert("تم نسخ التوجيه! الآن اذهب إلى ChatGPT، الصق التوجيه، وأضف بعده بيانات العميل.");
+    });
+  }
+
+  function exportJson() {
+    const data = getFormData();
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resume_data_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // --- Separate Modals & Triggers ---
+
+  function openPasteModal() {
+    document.getElementById('pasteModal').classList.add('active');
+    document.getElementById('pasteTextarea').value = '';
+    document.getElementById('pasteTextarea').focus();
+  }
+  
+  function closePasteModal() {
+    document.getElementById('pasteModal').classList.remove('active');
+  }
+
+  function pasteFromClipboard() {
+    navigator.clipboard.readText()
+      .then(text => {
+        document.getElementById('pasteTextarea').value = text;
+      })
+      .catch(err => {
+        alert("تعذر اللصق تلقائياً. يرجى استخدام Ctrl+V");
+      });
+  }
+
+  function processPastedCode() {
+    const rawJson = document.getElementById('pasteTextarea').value;
+    if (rawJson.trim()) {
+      processJsonData(rawJson);
+      closePasteModal();
+    } else {
+      alert("الرجاء لصق الكود أولاً");
+    }
+  }
+
+  function triggerFileImport() {
+    document.getElementById('jsonFileInput').click();
+  }
+
+  function handleFileImport(input) {
+    if (input.files.length > 0) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        processJsonData(e.target.result);
+        input.value = ''; // Reset to allow re-importing same file
+      };
+      reader.readAsText(file);
+    }
+  }
+
+  // Core Data Processor
+  function processJsonData(rawJson) {
+    try {
+      const data = JSON.parse(rawJson);
+      setFormData(data);
+      
+      if (data.warnings && data.warnings.length > 0) {
+        alert("تنبيه بخصوص البيانات المستوردة:\n- " + data.warnings.join("\n- "));
+      } else {
+        alert("تم استيراد البيانات بنجاح!");
+      }
+
+    } catch (e) {
+      alert("خطأ في قراءة ملف JSON. تأكد من صحة الكود أو الملف.");
+      console.error(e);
+    }
+  }
+
+  function fillSampleData() {
+    const lang = document.getElementById('langSelect').value;
+    let sampleData = {};
+
+    if (lang === 'ar') {
+        sampleData = {
+            name: "محمد احمد حسن",
+            phone: "+966555555555",
+            email: "xxxxxxxxx@hotmail.com",
+            city: "جدة",
+            nation: "سعودي",
+            summary: "طموح ومثابر. خريج العلوم الإدارية مع 5 سنوات من الخبرة كمشرف فرع. مرن وموثوق به في العمل بشكل مستقل أو ضمن بيئة الفريق. سريع التعلم ومفكر منطقي.",
+            experience: [
+                { company: "شركة الراجحي", role: "مشرف فرع", date: "2019 - الان", desc: "تسهيل المعاملات المالية تقديم الخدمات المالية بجميع انواعها للعملاء\nتطوير السياسات التي يتبعها البنك\nتقديم النصائح للعملاء في الاستثمار\nتوظيف الموظفين الجدد في البنك" }
+            ],
+            education: [
+                { degree: "بكالوريوس", major: "العلوم الإدارية", uni: "جامعة الملك عبدالعزيز", gpa: "3.38 من 5", date: "2016/05/29" }
+            ],
+            courses: "اللغة الانجليزية\nمايكروسوفت أوفيس",
+            skills: "إجادة الحاسب الآلي\nالتواصل الفعال\nالتخطيط\nتحمل ضغوط العمل\nالعمل بروح الفريق",
+            langs: "العربية: (اللغة الأم)\nالانجليزية: (جيد جداً)",
+            langSelect: "ar",
+            fontSelect: "Tajawal",
+            sectionOrder: ['sec-summary', 'sec-exp', 'sec-edu', 'sec-courses', 'sec-skills', 'sec-langs']
+        };
+    } else {
+        sampleData = {
+            name: "Mohammed Ahmed Hassan",
+            phone: "+966555555555",
+            email: "xxxxxxxxx@hotmail.com",
+            city: "Jeddah",
+            nation: "Saudi",
+            summary: "Ambitious and persistent. Administrative Sciences graduate with 5 years of experience as a Branch Supervisor. Flexible and reliable working independently or within a team environment. Fast learner and logical thinker.",
+            experience: [
+                { company: "Al Rajhi Company", role: "Branch Supervisor", date: "2019 - Present", desc: "Facilitating financial transactions and providing all types of financial services to customers\nDeveloping policies followed by the bank\nProviding advice to customers on investment\nRecruiting new employees for the bank" }
+            ],
+            education: [
+                { degree: "Bachelor", major: "Administrative Sciences", uni: "King Abdulaziz University", gpa: "3.38 / 5", date: "2016/05/29" }
+            ],
+            courses: "English Language\nMicrosoft Office",
+            skills: "Computer Proficiency\nEffective Communication\nPlanning\nWorking under pressure\nTeamwork",
+            langs: "Arabic: (Native)\nEnglish: (Very Good)",
+            langSelect: "en",
+            fontSelect: "Inter", 
+            sectionOrder: ['sec-summary', 'sec-exp', 'sec-edu', 'sec-courses', 'sec-skills', 'sec-langs']
+        };
+    }
+    
+    setFormData(sampleData);
+  }
+
+  function clearFormData() {
+    if(!confirm("هل أنت متأكد من مسح جميع البيانات؟")) return;
+    
+    const emptyData = {
+        name: "", phone: "", email: "", city: "", nation: "", summary: "",
+        experience: [], education: [], courses: "", skills: "", langs: "",
+        // Keep current font/lang settings
+        langSelect: document.getElementById('langSelect').value,
+        fontSelect: document.getElementById('fontSelect').value,
+        sectionOrder: ['sec-summary', 'sec-exp', 'sec-edu', 'sec-courses', 'sec-skills', 'sec-langs']
+    };
+    setFormData(emptyData);
+  }
+
+  // --- Init / Auto-Load ---
+  window.onload = function() {
+    const savedData = localStorage.getItem('resume_autosave');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setFormData(parsedData);
+      } catch(e) {
+        console.error("Error loading auto-save data:", e);
+        fillSampleData(); // Fallback to sample if error
+      }
+    } else {
+      fillSampleData(); // First time load
+    }
+  }
+</script>
+</body>
+</html>
